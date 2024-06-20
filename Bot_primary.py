@@ -7,22 +7,6 @@ from dotenv import load_dotenv, dotenv_values
 from discord.ext import commands
 from table2ascii import table2ascii as t2a, PresetStyle
 
-###############################################################################################################
-########## NEXT THING(S) TO BUILD: ############################################################################
-########## 1 ADMIN FUNCTIONS FOR MANAGEMENT THROUGH DISCORD CHANNEL ###########################################
-########## 2 FUNCTION TO RETRIEVE ALL TRACKED PLAYER CHANGES THROUGH X PERIOD, i.e., FOR DXP WEEKEND ##########
-###############################################################################################################
-
-###############################################################################################################
-########## 1 ADMIN FUNCTION FOR MANAGEMENT THROUGH DISCORD CHANNEL ############################################
-########## > SET UP NEW TABLE IN DB, ADD SUPERADMIN AND REGULAR ADMIN PERMISSION ##############################
-########## >> SUPERADMIN TO BE ALLOWED TO ADD/REMOVE ADMINS, ADD/REMOVE TRACKED USERNAMES #####################
-########## > ADMIN TO BE ALLOWED TO ADD/REMOVE TRACKED USERNAMES ##############################################
-########## > CREATE NEW .PY FOR ALL ADMIN FUNCTIONS ###########################################################
-########## >> INCLUDE CHECKS FOR PERMISSION LEVEL DEPENDING ON FUNCTION CALLED ################################
-########## > ADD NEW COMMANDS TO BOT_PRIMARY TO CALL FUNCTION THROUGH DISCORD INTERACTION #####################
-###############################################################################################################
-
 #allow all intents for discord bot
 intents = discord.Intents.all()
 intents.message_content = True
