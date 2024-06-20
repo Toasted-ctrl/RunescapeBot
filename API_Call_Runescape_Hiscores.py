@@ -1,8 +1,6 @@
 #import module to create API calls
 import requests
 
-#blabla
-
 #import module to create db connection to postgres, and insert records
 import psycopg2
 
