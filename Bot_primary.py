@@ -54,10 +54,10 @@ def run_discord_bot():
         message_channel = message.channel
 
         print(f"[{on_message_timestamp}] {message_author} said '{user_message}' (in channel: {message_channel})")
-        if message.content == "Hello there":
-            await message.channel.send("General Kenobi")
-        if message.content == "Shut up!":
-            await message.channel.send("No you shut up!")
+        if message.content == "Test input 1":
+            await message.channel.send("Test response 1")
+        if message.content == "Test input 2":
+            await message.channel.send("Test response 2")
 
     #currentHiscore command using playerName as variable
     @bot.command()
