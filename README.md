@@ -1,5 +1,5 @@
 # RunescapeBot
-Runescape bot that fetches and stores public API data, and makes it readable through a discord bot.
+Runescape bot that fetches and stores public API data, and makes it readable through a discord bot. I've only just started to learn python, this is my first project!
 
 FUTURE IMPLEMENTATIONS
 -  Superadmin functions (add/remove administrators).
