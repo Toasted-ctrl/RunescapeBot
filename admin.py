@@ -77,3 +77,189 @@ def retrieveAdminRights (insertedDiscordUsername):
             cursor.close()
         if conn is not None:
             conn.close()
+
+#function to check if player exists in tracked list
+def checkPlayerExistsInTrackedList (insertedPlayerName):
+
+    try:
+        conn = psycopg2.connect(
+            database = db_database,
+            host = db_hostname,
+            password = db_password,
+            user = db_user,
+            port = db_port_id
+        )
+
+        #creater cursor
+        cursor = conn.cursor()
+
+        #query to check if player_name exists in database
+        fetchQuery_playerInTrackedList = "SELECT FROM main_runescape_tracked_usernames WHERE player_name = %s"
+
+        #execute query
+        cursor.execute(fetchQuery_playerInTrackedList, [insertedPlayerName])
+
+        #fetch single line from DB
+        playerInList = cursor.fetchone()
+
+        #if query returns 0 rows, return 0, else return 1
+        if playerInList == None:
+            playerExistsInTracking = 0
+        else:
+            playerExistsInTracking = 1
+        
+        return (playerExistsInTracking)
+
+    #throw exception error if 'try' failed
+    except Exception as error_2:
+        print(error_2)
+
+    #always execute if parts of function fail
+    finally:
+        if cursor is not None:
+            cursor.close()
+        if conn is not None:
+            conn.close()
+
+#function to add players to tracked list
+def addPlayerToTrackedList (insertedPlayerName):
+
+    try:
+        #create db connection
+        conn = psycopg2.connect(
+            database = db_database,
+            host = db_hostname,
+            password = db_password,
+            port = db_port_id,
+            user = db_user
+        )
+
+        #create cursor
+        cursor = conn.cursor()
+
+        #create query for entering new player name in tracked_usernames
+        addQuery_playerInTrackedList = "INSERT INTO main_runescape_tracked_usernames (player_name, count) VALUES (%s, 1)"
+
+        #execute query
+        cursor.execute(addQuery_playerInTrackedList, [insertedPlayerName])
+
+        #commit change
+        conn.commit()
+
+    #throw exception if 'try' fails
+    except Exception as error_3:
+        print(error_3)
+
+    #always execute:
+    finally:
+        if cursor is not None:
+            cursor.close()
+        if conn is not None:
+            conn.close()
+
+def removePlayerFromTrackedList (insertedPlayerName):
+
+    try:
+        #create connection to db
+        conn = psycopg2.connect(
+            database = db_database,
+            host = db_hostname,
+            port = db_port_id,
+            user = db_user,
+            password = db_password
+        )
+
+        #create cursos
+        cursor = conn.cursor()
+
+        #create query to remove player name from db
+        removeQuery_playerInTrackedList = "DELETE FROM main_runescape_tracked_usernames WHERE player_name = %s"
+
+        #execute query
+        cursor.execute(removeQuery_playerInTrackedList, [insertedPlayerName])
+
+        #commit change
+        conn.commit() 
+
+    #throw error if 'try' fails
+    except Exception as error_4:
+        print(error_4)
+
+    #execute at all times
+    finally:
+        if cursor is not None:
+            cursor.close()
+        if conn is not None:
+            conn.close()
+
+#function for superadmin to add new admins
+def addAdminToAdminList (insertedDiscordName):
+
+    try:
+        #create db connection
+        conn = psycopg2.connect(
+            database = db_database,
+            host = db_hostname,
+            port = db_port_id,
+            password = db_password,
+            user = db_user
+        )
+
+        #create cursor
+        cursor = conn.cursor()
+
+        #create query to add user as admin
+        insertQuery_admin = "INSERT INTO main_runescape_admin (discord_username, tracking_addplayer, tracking_removeplayer, tracking_modifyplayer, admin_adduser, admin_removeuser, admin_modifyuser, admin_type) VALUES (%s, 1, 1, 1, 0, 0, 0, 'ADMIN')"
+
+        #execute query
+        cursor.execute(insertQuery_admin, [insertedDiscordName])
+
+        #commit changes
+        conn.commit()
+    
+    #throw error if 'try' fails
+    except Exception as error_5:
+        print(error_5)
+
+    #always execute
+    finally:
+        if cursor is not None:
+            cursor.close()
+        if conn is not None:
+            conn.close()
+    
+#function where user can be removed as admin
+def removeAdminFromAdminList (insertedDiscordName):
+
+    try:
+        #initiate db connection
+        conn = psycopg2.connect(
+            database = db_database,
+            host = db_hostname,
+            user = db_user,
+            password = db_password,
+            port = db_port_id
+        )
+
+        #create cursor
+        cursor = conn.cursor()
+
+        #query to remove admin
+        removeQuery_admin = "DELETE FROM main_runescape_admin WHERE discord_username = %s"
+
+        #execute query
+        cursor.execute(removeQuery_admin, [insertedDiscordName])
+
+        #commit changes
+        conn.commit()
+
+    #throw error if 'try' fails
+    except Exception as error_6:
+        print(error_6)
+
+    #execute at all times
+    finally:
+        if cursor is not None:
+            cursor.close()
+        if conn is not None:
+            conn.close()
