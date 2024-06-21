@@ -8,20 +8,21 @@ I chose this as I am a somewhat active player myself, and primarily so I could l
 -  Setting up a database including tables;
 -  Storing fetched API data into tables;
 -  Where necessary, retrieve data from table, transform, and insert back into another table;
--  UPandas to create and manupulate dataframes;
--  Discord.py
+-  Pandas to create and manupulate dataframes;
+-  Setting up admin profiles and functions for specific users to make use of;
+-  Discord.py.
 
 FUTURE IMPLEMENTATIONS
 
 1, Superadmin functions (add/remove/modify administrators);
 -  Add user to admin list is now added to admin.py. Command still needs to be added to Bot_primary to enable Discord;
 -  Remove user from admin list is now added to admin.py. Command still needs to be added to Bot_primary to enable Discord;
--  Modify user not added yet
+-  Modify user not added yet.
 
 2, Admin funcions (add/remove/modify players to tracked lists);
 -  Add player to tracked list is now added to admin.py. Command still needs to be added to Bot_primary to enable Discord;
 -  Remove player from tracked list is now added to admin.py. Command still needs to be added to Bot_primary to enable Discord;
--  Modify player not added yet;
+-  Modify player not added yet.
 
 3, Overall exp tracking over X time for all player for DXP events.
 
