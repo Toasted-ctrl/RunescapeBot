@@ -49,20 +49,22 @@ def run_discord_bot():
     async def addTracking(ctx, playerName):
 
         #!help information message
-        """Adds player to historical tracking. Will store daily hiscore/logs in database."""
+        """Adds player to historical tracking. Will store daily hiscore/logs in database. Can only be used by (super)admins."""
 
         #create objects for usage in terminal event logger, as well as commandAuthor for retrieving adminrights for discord user
         addTrackingFor_timestamp = datetime.datetime.now()
         commandAuthor = ctx.message.author
 
         #print log of interaction in terminal
-        print(f"[{addTrackingFor_timestamp}] {commandAuthor} used 'addTrackingFor' with player name '{playerName}'.")
+        print(f"[{addTrackingFor_timestamp}] {commandAuthor} used 'addTracking' with player name '{playerName}'.")
 
         #requesting admin rights for command author
         adminRights = admin.retrieveAdminRights(str(commandAuthor))
 
+        #if user does not have admin rights, return:
         if adminRights[0] == 0:
             await ctx.send(f"{commandAuthor} does not have permission to add tracking for '{playerName}'.")
+        
         else:
             #check if player exists in tracked list prior to adding
             playerExistsInTracking_prior = admin.checkPlayerExistsInTrackedList(playerName)
@@ -89,38 +91,85 @@ def run_discord_bot():
     async def removeTracking(ctx, playerName):
 
         #!help information message
-        """Removes player from historical tracking."""
+        """Removes player from historical tracking. Can only be used by (super)admins."""
 
         #create objects for usage in terminal event logger, as well as commandAuthor for retrieving adminrights for discord user
         removeTrackingfor_timestamp = datetime.datetime.now()
         commandAuthor = ctx.message.author
 
         #print log of interaction in terminal
-        print(f"[{removeTrackingfor_timestamp}] {commandAuthor} used 'removeTrackingFor' with player name '{playerName}'.")
+        print(f"[{removeTrackingfor_timestamp}] {commandAuthor} used 'removeTracking' with player name '{playerName}'.")
 
         #requesting admin rights for command author
         adminRights = admin.retrieveAdminRights(str(commandAuthor))
 
+        #if user does not have admin rights, return:
         if adminRights == 0:
             await ctx.send(f"{commandAuthor} does not have permission to remove tracking for '{playerName}'.")
+        
         else:
             #check if player exists in tracking before remove function
             playerExistsInTracking_prior = admin.checkPlayerExistsInTrackedList(playerName)
 
+            #if player does not exist in tracked list, return:
             if playerExistsInTracking_prior == 0:
                 await ctx.send(f"'{playerName}' was already untracked.")
 
             else:
+                #remove player from tracking list
                 admin.removePlayerFromTrackedList(playerName)
                 
                 #check if player exists in tracked list after remove function
                 playerExistsInTracking_after = admin.checkPlayerExistsInTrackedList(playerName)
 
+                #if player was removed successfully, return:
                 if playerExistsInTracking_after == 0:
                     await ctx.send(f"Tracking was disabled for '{playerName}'.")
                 
+                #if player was not successfully removed, return:
                 else:
                     await ctx.send(f"Tracking could not be disabled for '{playerName}'.")
+
+    #command for superadmin to add new admins
+    @bot.command()
+    async def addAdmin(ctx, discord_username):
+
+        #!help text
+        """Adds admin rights for specific user. Can only be used by superadmins."""
+
+        #create objects for usage in terminal event logger, as well as commandAuthor for retrieving adminrights for discord user
+        addAdmin_timestamp = datetime.datetime.now()
+        commandAuthor = ctx.message.author
+
+        print(f"[{addAdmin_timestamp}] {commandAuthor} used 'removeTracking' with discord username '{discord_username}'.")
+
+        #retrieve admin rights for user
+        adminRights = admin.retrieveAdminRights(str(commandAuthor))
+
+        #check if potential new exists as admin
+        checkIfUserIsAdmin_before = admin.retrieveAdminRights(discord_username)
+
+        #if user exists as admin already, return:
+        if checkIfUserIsAdmin_before[0] == 1:
+            await ctx.send(f"'{discord_username}' is already an admin.")
+
+        else:
+            #if user does not have permission to add new admins, return:
+            if adminRights[4] == 0:
+                await ctx.send(f"{commandAuthor} does not have permission to add new admins.")
+            
+            if adminRights[4] == 1:
+                #add new admin
+                admin.addAdminToAdminList(discord_username)
+                checkIfUserIsAdmin_after = admin.retrieveAdminRights(discord_username)
+
+                #if user was added as admin, return:
+                if checkIfUserIsAdmin_after[0] == 1:
+                    await ctx.send(f"'{discord_username}' is now an admin.")
+
+                #if user was not added as admin, return:
+                else:
+                    await ctx.send(f"'{discord_username}' could not be added as admin.")
 
     #currentHiscore command using playerName as arguments
     @bot.command()
