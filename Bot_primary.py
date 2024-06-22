@@ -141,7 +141,7 @@ def run_discord_bot():
         addAdmin_timestamp = datetime.datetime.now()
         commandAuthor = ctx.message.author
 
-        print(f"[{addAdmin_timestamp}] {commandAuthor} used 'removeTracking' with discord username '{discord_username}'.")
+        print(f"[{addAdmin_timestamp}] {commandAuthor} used 'addAdmin' with discord username '{discord_username}'.")
 
         #retrieve admin rights for user
         adminRights = admin.retrieveAdminRights(str(commandAuthor))
@@ -171,6 +171,49 @@ def run_discord_bot():
                 else:
                     await ctx.send(f"'{discord_username}' could not be added as admin.")
 
+    #command to remove admin
+    @bot.command()
+    async def removeAdmin(ctx, discord_username):
+
+        #!help text
+        """Removes admin rights for user. Can only be used by superadmins"""
+
+        #create objects for usage in terminal event logger, as well as commandAuthor for retrieving adminrights for discord user
+        removeAdmin_timestamp = datetime.datetime.now()
+        commandAuthor = ctx.message.author
+
+        print(f"[{removeAdmin_timestamp}] {commandAuthor} used 'removeAdmin' with discord username '{discord_username}'.")
+
+        #check if user has admin rights
+        adminRights = admin.retrieveAdminRights(str(commandAuthor))
+
+        #check if user exists as admin
+        checkIfUserIsAdmin_before = admin.retrieveAdminRights(discord_username)
+
+        #if user is already non-existent as admin, return:
+        if checkIfUserIsAdmin_before[0] == 0:
+            await ctx.send(f"'{discord_username}' is not an admin.")
+
+        else:
+            #if user does not have admin permissions, return:
+            if adminRights[5] == 0:
+                await ctx.send(f"{commandAuthor} does not have permission to remove admins.")
+
+            #if user does have admin persmission, do:
+            if adminRights[5] == 1:
+                admin.removeAdminFromAdminList(discord_username)
+
+                #check if user was removed as admin
+                checkIfUserIsAdmin_after = admin.retrieveAdminRights(discord_username)
+
+                #if admin rights were revoked, return:
+                if checkIfUserIsAdmin_after[0] == 0:
+                    await ctx.send(f"'{discord_username}'s' admin rights were revoked.")
+
+                #if admin rights were not revoked, return:
+                else:
+                    await ctx.send(f"'{discord_username}'s' admin rights could not be revoked.")
+                
     #currentHiscore command using playerName as arguments
     @bot.command()
     async def currentHiscore(ctx, playerName):
