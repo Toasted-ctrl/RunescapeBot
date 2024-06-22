@@ -1,6 +1,7 @@
 import discord
 import Lookup_PlayerCurrentStatus
 import Lookup_PlayerCurrentCompare
+import admin
 import datetime
 import os
 from dotenv import load_dotenv, dotenv_values
@@ -43,7 +44,48 @@ def run_discord_bot():
         if message.content == "Test input 2":
             await message.channel.send("Test response 2")
 
-    #currentHiscore command using playerName as variable
+    #addTrackingFor command, using discord username and playerName as arguments
+    @bot.command()
+    async def addTrackingFor(ctx, playerName):
+
+        #!help information message
+        """Adds player to list for historical tracking. Will store daily hiscore/logs in database."""
+
+        #create objects for usage in terminal event logger, as well as commandAuthor for retrieving adminrights for discord user
+        addTrackingFor_timestamp = datetime.datetime.now()
+        commandAuthor = ctx.message.author
+
+        #print log of interaction in terminal
+        print(f"[{addTrackingFor_timestamp}] {commandAuthor} used 'addTrackingFor' with player name '{playerName}'.")
+
+        #requesting admin rights for command author
+        adminRights = admin.retrieveAdminRights(str(commandAuthor))
+
+        if adminRights[0] == 0:
+            await ctx.send(f"{commandAuthor} does not have permission to add tracking for '{playerName}'")
+        else:
+            #check if player exists in tracked list prior to adding
+            playerExistsInTracking_prior = admin.checkPlayerExistsInTrackedList(playerName)
+
+            #if player exists in tracking, return that player is already being tracked
+            if playerExistsInTracking_prior == 1:
+                await ctx.send(f"Statistics for '{playerName}' are already tracked.")
+
+            #if player does not exist in tracking, do following:
+            else:
+                #add player to tracked list
+                admin.addPlayerToTrackedList(playerName)
+                
+                #check again if player was added to tracked list
+                playerExistsInTracking_after = admin.checkPlayerExistsInTrackedList(playerName)
+
+                if playerExistsInTracking_after == 1:
+                    await ctx.send(f"Tracking was enabled for '{playerName}'.")
+
+                else:
+                    await ctx.send(f"Tracking could not be enabled for '{playerName}'.")
+
+    #currentHiscore command using playerName as arguments
     @bot.command()
     async def currentHiscore(ctx, playerName):
 
