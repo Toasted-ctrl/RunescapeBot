@@ -12,19 +12,36 @@ I chose this as I am a somewhat active player myself, and primarily so I could l
 -  Setting up admin profiles and functions for specific users to make use of;
 -  Discord.py.
 
+REQUIREMENTS
+
+-  This bot requires a database to be set up locally, and several tables within said database. Table requirements will be added at a later stage.
+
 FUTURE IMPLEMENTATIONS
 
-1, Superadmin functions (add/remove/modify administrators);
--  Add user to admin list is now added to admin.py. Command still needs to be added to Bot_primary to enable Discord;
--  Remove user from admin list is now added to admin.py. Command still needs to be added to Bot_primary to enable Discord;
--  Modify user not added yet.
+1, Super Admin functions:
+-  Modify Global Admin settings (discord_username).
+
+1, Super Admin and Global Admin functions:
+-  Modify Admin setting (discord_username).
 
 2, Admin funcions (add/remove/modify players to tracked lists);
--  Add player to tracked list is now added to admin.py. Command still needs to be added to Bot_primary to enable Discord;
--  Remove player from tracked list is now added to admin.py. Command still needs to be added to Bot_primary to enable Discord;
--  Modify player not added yet.
+-  Modify tracked username in main_runescape_tracked_usernames.
+-  Modify historical records tracked, based on main_tracked_usernames.
 
 3, Overall exp tracking over X time for all player for DXP events.
 
-REQUIREMENTS
--  This bot requires a database to be set up locally, and several tables within said database. Table requirements will be added at a later stage.
+4, Retrieve user's admin status.
+
+RECENTLY ADDED
+
+1, Super Admin functions:
+-  Add user as Global Admin to main_runescape_admin.
+-  Remove user as Global Admin from main_runescape_admin.
+
+2, Global Admin functions:
+-  Add user as Admin to main_runescape_admin.
+-  Remove user from main_runescape_admin.
+
+3, Admin functions:
+-  Add user to main_runescape_tracked_usernames (enables historical hiscore/stat/log tracking).
+-  Remove user from main_runescape_tracked_usernames.
