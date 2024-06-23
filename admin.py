@@ -21,7 +21,7 @@ conn = None
 cursor = None
 
 #creating function to retrieve admin rights for discord user
-def retrieveAdminRights (insertedDiscordUsername):
+def retrieveAdminRights(insertedDiscordUsername):
 
     try:
         #connect to db
@@ -75,7 +75,7 @@ def retrieveAdminRights (insertedDiscordUsername):
             conn.close()
 
 #function to check if player exists in tracked list
-def checkPlayerExistsInTrackedList (insertedPlayerName):
+def checkPlayerExistsInTrackedList(insertedPlayerName):
 
     try:
         conn = psycopg2.connect(
@@ -118,7 +118,7 @@ def checkPlayerExistsInTrackedList (insertedPlayerName):
             conn.close()
 
 #function to add players to tracked list
-def addPlayerToTrackedList (insertedPlayerName):
+def addPlayerToTrackedList(insertedPlayerName):
 
     try:
         #create db connection
@@ -153,7 +153,7 @@ def addPlayerToTrackedList (insertedPlayerName):
         if conn is not None:
             conn.close()
 
-def removePlayerFromTrackedList (insertedPlayerName):
+def removePlayerFromTrackedList(insertedPlayerName):
 
     try:
         #create connection to db
@@ -189,7 +189,7 @@ def removePlayerFromTrackedList (insertedPlayerName):
             conn.close()
 
 #function for superadmin to add new admins
-def addAdminToAdminList (insertedDiscordName):
+def addAdminToAdminList(insertedDiscordName):
 
     try:
         #create db connection
@@ -225,7 +225,7 @@ def addAdminToAdminList (insertedDiscordName):
             conn.close()
     
 #function where user can be removed as admin
-def removeAdminFromAdminList (insertedDiscordName):
+def removeAdminFromAdminList(insertedDiscordName):
 
     try:
         #initiate db connection
@@ -252,6 +252,78 @@ def removeAdminFromAdminList (insertedDiscordName):
     #throw error if 'try' fails
     except Exception as error_6:
         print(error_6)
+
+    #execute at all times
+    finally:
+        if cursor is not None:
+            cursor.close()
+        if conn is not None:
+            conn.close()
+
+#function to add global admins
+def addGlobalAdminToAdminList(insertedDiscordName):
+
+    try:
+        #initiate db connection
+        conn = psycopg2.connect(
+            database = db_database,
+            host = db_hostname,
+            password = db_password,
+            user = db_user,
+            port = db_port_id
+        )
+
+        #create cursor
+        cursor = conn.cursor()
+
+        #query to add global admin
+        addQuery_adminGlobal = "INSERT INTO main_runescape_admin (discord_username, admin_type, edit_admin, edit_admin_global, edit_admin_super) VALUES (%s, 'GLOBAL ADMIN', 1, 1, 0)"
+
+        #execute query
+        cursor.execute(addQuery_adminGlobal, [insertedDiscordName])
+
+        #commit changes
+        conn.commit()
+
+    #throw error if 'try' fails
+    except Exception as error_7:
+        print(error_7)
+
+    #execute at all times
+    finally:
+        if cursor is not None:
+            cursor.close()
+        if conn is not None:
+            conn.close()
+
+#function to remove global admin
+def removeGlobalAdminFromAdminList(insertedDiscordName):
+
+    try:
+        #initiate db connection
+        conn = psycopg2.connect(
+            database = db_database,
+            host = db_hostname,
+            password = db_password,
+            user = db_user,
+            port = db_port_id
+        )
+
+        #create cursor
+        cursor = conn.cursor()
+
+        #query to remove global admin
+        removeQuery_adminGlobal = "DELETE FROM main_runescape_admin WHERE discord_username = %s"
+
+        #execute query
+        cursor.execute(removeQuery_adminGlobal, [insertedDiscordName])
+
+        #commit changes
+        conn.commit()
+
+    #throw error if 'try' fails
+    except Exception as error_8:
+        print(error_8)
 
     #execute at all times
     finally:

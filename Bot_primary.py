@@ -49,7 +49,7 @@ def run_discord_bot():
     async def addTracking(ctx, playerName):
 
         #!help information message
-        """Adds player to historical tracking. Will store daily hiscore/logs in database. Can only be used by (super)admins."""
+        """Adds player to historical tracking. Will store daily hiscore/logs in database. Can only be used by Admins, Global Admins and Super Admins."""
 
         #create objects for usage in terminal event logger, as well as commandAuthor for retrieving adminrights for discord user
         addTrackingFor_timestamp = datetime.datetime.now()
@@ -91,7 +91,7 @@ def run_discord_bot():
     async def removeTracking(ctx, playerName):
 
         #!help information message
-        """Removes player from historical tracking. Can only be used by (super)admins."""
+        """Removes player from historical tracking. Can only be used by Admins, Global Admin and Super Admins."""
 
         #create objects for usage in terminal event logger, as well as commandAuthor for retrieving adminrights for discord user
         removeTrackingfor_timestamp = datetime.datetime.now()
@@ -135,7 +135,7 @@ def run_discord_bot():
     async def addAdmin(ctx, discord_username):
 
         #!help text
-        """Adds admin rights for specific user. Can only be used by superadmins."""
+        """Adds Admin rights for specific user. Can only be used by Global Admins and Super Admins."""
 
         #create objects for usage in terminal event logger, as well as commandAuthor for retrieving adminrights for discord user
         addAdmin_timestamp = datetime.datetime.now()
@@ -151,12 +151,12 @@ def run_discord_bot():
 
         #if user exists as admin already, return:
         if checkIfUserIsAdmin_before[0] == 1:
-            await ctx.send(f"'{discord_username}' is already an admin.")
+            await ctx.send(f"'{discord_username}' is already an Admin.")
 
         else:
             #if user does not have permission to add new admins, return:
             if adminRights[3] == 0:
-                await ctx.send(f"{commandAuthor} does not have permission to add new admins.")
+                await ctx.send(f"{commandAuthor} does not have permission to add new Admins.")
             
             #if user does have permission to add new admins, do:
             if adminRights[0] == 1 and adminRights[3] == 1:
@@ -167,18 +167,18 @@ def run_discord_bot():
 
                 #if user was added as admin, return:
                 if checkIfUserIsAdmin_after[0] == 1:
-                    await ctx.send(f"'{discord_username}' is now an admin.")
+                    await ctx.send(f"'{discord_username}' is now an Admin.")
 
                 #if user was not added as admin, return:
                 else:
-                    await ctx.send(f"'{discord_username}' could not be added as admin.")
+                    await ctx.send(f"'{discord_username}' could not be added as Admin.")
 
     #command to remove admin
     @bot.command()
     async def removeAdmin(ctx, discord_username):
 
         #!help text
-        """Removes admin rights for user. Can only be used by superadmins"""
+        """Removes Admin rights for user. Can only be used by Global Admins and Super Admins"""
 
         #create objects for usage in terminal event logger, as well as commandAuthor for retrieving adminrights for discord user
         removeAdmin_timestamp = datetime.datetime.now()
@@ -194,12 +194,12 @@ def run_discord_bot():
 
         #if user is already non-existent as admin, return:
         if checkIfUserIsAdmin_before[0] == 0:
-            await ctx.send(f"'{discord_username}' is not an admin.")
+            await ctx.send(f"'{discord_username}' is not an Admin.")
 
         else:
             #if user does not have admin permissions, return:
             if adminRights[3] == 0:
-                await ctx.send(f"{commandAuthor} does not have permission to remove admins.")
+                await ctx.send(f"{commandAuthor} does not have permission to remove Admins.")
 
             #if user does have admin persmission, do:
             if adminRights[0] == 1 and adminRights[3] == 1:
@@ -210,11 +210,91 @@ def run_discord_bot():
 
                 #if admin rights were revoked, return:
                 if checkIfUserIsAdmin_after[0] == 0:
-                    await ctx.send(f"'{discord_username}'s' admin rights were revoked.")
+                    await ctx.send(f"'{discord_username}'s' Admin rights were revoked.")
 
                 #if admin rights were not revoked, return:
                 else:
-                    await ctx.send(f"'{discord_username}'s' admin rights could not be revoked.")
+                    await ctx.send(f"'{discord_username}'s' Admin rights could not be revoked.")
+
+    #command to add Global Admins
+    @bot.command()
+    async def addGlobalAdmin(ctx, discord_username):
+
+        #!help text
+        """Adds Global Admin permission for user. Can only be used by Super Admins."""
+
+        addGlobalAdmin_timestamp = datetime.datetime.now()
+        commandAuthor = ctx.message.author
+
+        print(f"[{addGlobalAdmin_timestamp}] {commandAuthor} used 'addGlobalAdmin' with discord username '{discord_username}'.")
+
+        #check if user is already Global Admin
+        checkIfUserIsGlobalAdmin_before = admin.retrieveAdminRights(discord_username)
+
+        #retrieve admin rights for command author
+        adminRights = admin.retrieveAdminRights(str(commandAuthor))
+
+        #if user is already global admin, return:
+        if checkIfUserIsGlobalAdmin_before [3] == 1:
+            await ctx.send(f"'{discord_username}' is already a Global Admin.")
+
+        #if user is not global admin yet, do:
+        else:
+
+            #if user does not have permission to add global admins, return:
+            if adminRights[4] == 0:
+                await ctx.send(f"{commandAuthor} does not have permission to add Global Admins.")
+
+            #if user has permission to add global admins, do:
+            if adminRights[4] == 1:
+                admin.addGlobalAdminToAdminList(discord_username)
+                checkIfUserIsGlobalAdmin_after = admin.retrieveAdminRights(discord_username)
+
+                if checkIfUserIsGlobalAdmin_after[3] == 1:
+                    await ctx.send(f"'{discord_username}' is now a Global Admin.")
+
+                else:
+                    await ctx.send(f"'{discord_username}' could not be added as Global Admin.")
+
+    #command to add Global Admins
+    @bot.command()
+    async def removeGlobalAdmin(ctx, discord_username):
+
+        #!help text
+        """Removes Global Admin permission for user. Can only be used by Super Admins."""
+
+        removeGlobalAdmin_timestamp = datetime.datetime.now()
+        commandAuthor = ctx.message.author
+
+        print(f"[{removeGlobalAdmin_timestamp}] {commandAuthor} used 'removeGlobalAdmin' with discord username '{discord_username}'.")
+
+        #check if user is already Global Admin
+        checkIfUserIsGlobalAdmin_before = admin.retrieveAdminRights(discord_username)
+
+        #retrieve admin rights for command author
+        adminRights = admin.retrieveAdminRights(str(commandAuthor))
+
+        #if user is not a global admin:
+        if checkIfUserIsGlobalAdmin_before [3] == 0:
+            await ctx.send(f"'{discord_username}' is not a Global Admin.")
+
+        #if user is a global admin:
+        else:
+
+            #if user does not have permission to add global admins, return:
+            if adminRights[4] == 0:
+                await ctx.send(f"{commandAuthor} does not have permission to remove Global Admins.")
+
+            #if user has permission to add global admins, do:
+            if adminRights[4] == 1:
+                admin.removeGlobalAdminFromAdminList(discord_username)
+                checkIfUserIsGlobalAdmin_after = admin.retrieveAdminRights(discord_username)
+
+                if checkIfUserIsGlobalAdmin_after[3] == 0:
+                    await ctx.send(f"'{discord_username}'s' Global Admin permissions were revoked.")
+
+                else:
+                    await ctx.send(f"'{discord_username}'s' Global Admin permissions could not be revoked.")
                 
     #currentHiscore command using playerName as arguments
     @bot.command()
