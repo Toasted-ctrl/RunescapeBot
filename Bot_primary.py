@@ -65,7 +65,7 @@ def run_discord_bot():
         if adminRights[0] == 0:
             await ctx.send(f"{commandAuthor} does not have permission to add tracking for '{playerName}'.")
         
-        else:
+        if adminRights[0] == 1 and adminRights[2] == 1:
             #check if player exists in tracked list prior to adding
             playerExistsInTracking_prior = admin.checkPlayerExistsInTrackedList(playerName)
 
@@ -104,10 +104,10 @@ def run_discord_bot():
         adminRights = admin.retrieveAdminRights(str(commandAuthor))
 
         #if user does not have admin rights, return:
-        if adminRights == 0:
+        if adminRights[0] == 0:
             await ctx.send(f"{commandAuthor} does not have permission to remove tracking for '{playerName}'.")
         
-        else:
+        if adminRights[0] == 1 and adminRights[2] == 1:
             #check if player exists in tracking before remove function
             playerExistsInTracking_prior = admin.checkPlayerExistsInTrackedList(playerName)
 
@@ -155,10 +155,12 @@ def run_discord_bot():
 
         else:
             #if user does not have permission to add new admins, return:
-            if adminRights[4] == 0:
+            if adminRights[3] == 0:
                 await ctx.send(f"{commandAuthor} does not have permission to add new admins.")
             
-            if adminRights[4] == 1:
+            #if user does have permission to add new admins, do:
+            if adminRights[0] == 1 and adminRights[3] == 1:
+
                 #add new admin
                 admin.addAdminToAdminList(discord_username)
                 checkIfUserIsAdmin_after = admin.retrieveAdminRights(discord_username)
@@ -196,11 +198,11 @@ def run_discord_bot():
 
         else:
             #if user does not have admin permissions, return:
-            if adminRights[5] == 0:
+            if adminRights[3] == 0:
                 await ctx.send(f"{commandAuthor} does not have permission to remove admins.")
 
             #if user does have admin persmission, do:
-            if adminRights[5] == 1:
+            if adminRights[0] == 1 and adminRights[3] == 1:
                 admin.removeAdminFromAdminList(discord_username)
 
                 #check if user was removed as admin

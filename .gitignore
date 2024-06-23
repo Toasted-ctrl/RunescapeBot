@@ -1,2 +1,5 @@
 #dotenv file
 .env
+
+#cache files
+.pyc

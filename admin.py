@@ -48,24 +48,20 @@ def retrieveAdminRights (insertedDiscordUsername):
         #if retrieved list has no content, do below:
         if discordUserAdminRights == None:
             userHasAdminRights = 0
-            tracking_addPlayer = 0
-            tracking_removePlayer = 0
-            tracking_modifyPlayer = 0
-            admin_addUser = 0
-            admin_removeUser = 0
-            admin_modifyUser = 0
+            admin_type = 0
+            edit_admin = 0
+            edit_admin_global = 0
+            edit_admin_super = 0
 
         #if retrieved list has content, do below
         else:
             userHasAdminRights = 1
-            tracking_addPlayer = discordUserAdminRights[1]
-            tracking_removePlayer = discordUserAdminRights[2]
-            tracking_modifyPlayer = discordUserAdminRights[3]
-            admin_addUser = discordUserAdminRights[4]
-            admin_removeUser = discordUserAdminRights[5]
-            admin_modifyUser = discordUserAdminRights[6]
+            admin_type = discordUserAdminRights[1]
+            edit_admin = discordUserAdminRights[2]
+            edit_admin_global = discordUserAdminRights[3]
+            edit_admin_super = discordUserAdminRights[4]
 
-        return (userHasAdminRights, tracking_addPlayer, tracking_removePlayer, tracking_modifyPlayer, admin_addUser, admin_removeUser, admin_modifyUser)
+        return (userHasAdminRights, admin_type, edit_admin, edit_admin_global, edit_admin_super)
 
     #create exception for if 'try' fails
     except Exception as error_1:
@@ -209,7 +205,7 @@ def addAdminToAdminList (insertedDiscordName):
         cursor = conn.cursor()
 
         #create query to add user as admin
-        insertQuery_admin = "INSERT INTO main_runescape_admin (discord_username, tracking_addplayer, tracking_removeplayer, tracking_modifyplayer, admin_adduser, admin_removeuser, admin_modifyuser, admin_type) VALUES (%s, 1, 1, 1, 0, 0, 0, 'ADMIN')"
+        insertQuery_admin = "INSERT INTO main_runescape_admin (discord_username, admin_type, edit_admin, edit_admin_global, edit_admin_super) VALUES (%s, 'ADMIN', 1, 0, 0)"
 
         #execute query
         cursor.execute(insertQuery_admin, [insertedDiscordName])
