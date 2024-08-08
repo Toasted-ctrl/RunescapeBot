@@ -168,19 +168,22 @@ def compareLast30daysPlayerAchievements(insertedPlayerNameP1, insertedPlayerName
     #create current date minus 30 days datestamp
     datePrior = str(currentDateNum - timedelta(days=30))
 
-    #retrieving data from DB
-    df_retrieveLastAchievements = pd.read_sql_table('main_runescape_activities_processed', engine)
+    #p1 sql query
+    sql_compareLast30daysPlayerAchievements_p1 = str("SELECT * FROM main_runescape_activities_processed WHERE player_name = '" + insertedPlayerNameP1 + "' AND event_date_numeric >= '" + datePrior + "' AND event_date_numeric <= '" + currentDate + "'")
 
-    #create new dataframe for P1 > use .loc with currentDate and datePrior on event_date_numeric, and .loc with insertedPlayerNameP1 on player_name
-    df_lastAchievementsProcessedP1 = df_retrieveLastAchievements.loc[(df_retrieveLastAchievements['event_date_numeric'] >= datePrior) & (df_retrieveLastAchievements['event_date_numeric'] <= currentDate) & (df_retrieveLastAchievements['player_name'] == insertedPlayerNameP1)]
+    #p1 dataframe
+    df_compareLast30daysPlayerAchievements_p1 = pd.read_sql(sql=sql_compareLast30daysPlayerAchievements_p1, con=engine)
 
-    #create string value for number of achievements for P1 in last 30 days
-    player1NumberOfAchievements = str(df_lastAchievementsProcessedP1['activities_unique_id'].value_counts().shape[0])
+    #p1 count achievements
+    achievements_p1 = str(len(df_compareLast30daysPlayerAchievements_p1))
 
-    #create new dataframe for P2 > use .loc with currentDate and datePrior on event_date_numeric, and .loc with insertedPlayerNameP1 on player_name
-    df_lastAchievementsProcessedP2 = df_retrieveLastAchievements.loc[(df_retrieveLastAchievements['event_date_numeric'] >= datePrior) & (df_retrieveLastAchievements['event_date_numeric'] <= currentDate) & (df_retrieveLastAchievements['player_name'] == insertedPlayerNameP2)]
+    #p2 sql query
+    sql_compareLast30daysPlayerAchievements_p2 = str("SELECT * FROM main_runescape_activities_processed WHERE player_name = '" + insertedPlayerNameP2 + "' AND event_date_numeric >= '" + datePrior + "' AND event_date_numeric <= '" + currentDate + "'")
 
-    #create string value for number of achievements for P2 in last 30 days
-    player2NumberOfAchievements = str(df_lastAchievementsProcessedP2['activities_unique_id'].value_counts().shape[0])
+    #p2 dataframe
+    df_compareLast30daysPlayerAchievements_p2 = pd.read_sql(sql=sql_compareLast30daysPlayerAchievements_p2, con=engine)
 
-    return (player1NumberOfAchievements, player2NumberOfAchievements)
+    #p2 count achievements
+    achievements_p2 = str(len(df_compareLast30daysPlayerAchievements_p2))
+
+    return (achievements_p1, achievements_p2)
