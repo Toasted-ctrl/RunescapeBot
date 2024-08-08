@@ -81,10 +81,10 @@ def compareCurrentPlayerSkills(insertedPlayerNameP1, insertedPlayerNameP2):
     #p1 create dataframe
     df_CompareCurrentPlayerSkills_p1 = pd.read_sql(sql=sql_compareCurrentPlayerSkills_p1, con=engine)
 
-    #p1 sql query
+    #p2 sql query
     sql_compareCurrentPlayerSkills_p2 = str("SELECT * FROM main_runescape_hiscores WHERE player_name = '" + insertedPlayerNameP2 + "' AND datesync_date = '" + currentDate + "'")
 
-    #p1 create dataframe
+    #p2 create dataframe
     df_CompareCurrentPlayerSkills_p2 = pd.read_sql(sql=sql_compareCurrentPlayerSkills_p2, con=engine)
 
     #Merge tables on skill
@@ -124,17 +124,20 @@ def compareCurrentPlayerSkills(insertedPlayerNameP1, insertedPlayerNameP2):
 #create function to compare player activites
 def compareCurrentPlayerActivities(insertedPlayerNameP1, insertedPlayerNameP2):
 
-    #retrieve data from DB
-    df_retrieveActivities = pd.read_sql_table('main_runescape_achievements', engine)
+    #p1 sql query
+    sql_compareCurrentPlayerActivities_p1 = str("SELECT * FROM main_runescape_achievements WHERE player_name = '" + insertedPlayerNameP1 + "' AND datesync_date = '" + currentDate + "'")
 
-    #create new dataframe for P1 > use .loc with with currentDate on datesync_date and insertedPlayerNameP1 on player_name
-    df_processedActivitiesP1 = df_retrieveActivities.loc[(df_retrieveActivities['player_name'] == insertedPlayerNameP1) & (df_retrieveActivities['datesync_date'] == currentDate)]
+    #p1 dataframe
+    df_compareCurrentPlayerActivities_p1 = pd.read_sql(sql=sql_compareCurrentPlayerActivities_p1, con=engine)
 
-    #create new dataframe for P2 > use .loc with with currentDate on datesync_date and insertedPlayerNameP2 on player_name
-    df_processedActivitiesP2 = df_retrieveActivities.loc[(df_retrieveActivities['player_name'] == insertedPlayerNameP2) & (df_retrieveActivities['datesync_date'] == currentDate)]
+    #p2 sql query
+    sql_compareCurrentPlayerActivities_p2 = str("SELECT * FROM main_runescape_achievements WHERE player_name = '" + insertedPlayerNameP2 + "' AND datesync_date = '" + currentDate + "'")
+
+    #p2 dataframe
+    df_compareCurrentPlayerActivities_p2 = pd.read_sql(sql=sql_compareCurrentPlayerActivities_p2, con=engine)
 
     #merge tables on activity
-    df_currentActivitiesMerged = pd.merge(df_processedActivitiesP1, df_processedActivitiesP2, on='activity', how='inner')
+    df_currentActivitiesMerged = pd.merge(df_compareCurrentPlayerActivities_p1, df_compareCurrentPlayerActivities_p2, on='activity', how='inner')
 
     #calculate rank_diff between players
     df_currentActivitiesMerged['rank_diff'] = df_currentActivitiesMerged['rank_x'] - df_currentActivitiesMerged['rank_y']
