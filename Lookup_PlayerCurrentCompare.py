@@ -75,17 +75,20 @@ def compareCurrentPlayerStatus(insertedPlayerNameP1, insertedPlayerNameP2):
 #create function to compare player levels
 def compareCurrentPlayerSkills(insertedPlayerNameP1, insertedPlayerNameP2):
 
-    #retrieve data from DB
-    df_retrieveCurrentSkills = pd.read_sql_table('main_runescape_hiscores', engine)
+    #p1 sql query
+    sql_compareCurrentPlayerSkills_p1 = str("SELECT * FROM main_runescape_hiscores WHERE player_name = '" + insertedPlayerNameP1 + "' AND datesync_date = '" + currentDate + "'")
 
-    #create new dataframe for P1 > use .loc with with currentDate on datesync_date and insertedPlayerNameP1 on player_name
-    df_currentSkillSorted_p1 = df_retrieveCurrentSkills.loc[(df_retrieveCurrentSkills['player_name'] == insertedPlayerNameP1) & (df_retrieveCurrentSkills['datesync_date'] == currentDate)]
+    #p1 create dataframe
+    df_CompareCurrentPlayerSkills_p1 = pd.read_sql(sql=sql_compareCurrentPlayerSkills_p1, con=engine)
 
-    #create new dataframe for P2 > use .loc with with currentDate on datesync_date and insertedPlayerNameP2 on player_name
-    df_currentSkillSorted_p2 = df_retrieveCurrentSkills.loc[(df_retrieveCurrentSkills['player_name'] == insertedPlayerNameP2) & (df_retrieveCurrentSkills['datesync_date'] == currentDate)]
+    #p1 sql query
+    sql_compareCurrentPlayerSkills_p2 = str("SELECT * FROM main_runescape_hiscores WHERE player_name = '" + insertedPlayerNameP2 + "' AND datesync_date = '" + currentDate + "'")
+
+    #p1 create dataframe
+    df_CompareCurrentPlayerSkills_p2 = pd.read_sql(sql=sql_compareCurrentPlayerSkills_p2, con=engine)
 
     #Merge tables on skill
-    df_currentSkillMerged = pd.merge(df_currentSkillSorted_p1, df_currentSkillSorted_p2, on = 'skill', how='inner')
+    df_currentSkillMerged = pd.merge(df_CompareCurrentPlayerSkills_p1, df_CompareCurrentPlayerSkills_p2, on = 'skill', how='inner')
 
     #calculate experience_diff between players
     df_currentSkillMerged['experience_diff'] = df_currentSkillMerged['experience_x'] - df_currentSkillMerged['experience_y']
