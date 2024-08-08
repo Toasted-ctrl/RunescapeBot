@@ -21,56 +21,56 @@ currentDate = str(currentDateNum)
 
 #create engine to retrieve data from DB
 engine = create_engine(db_method_db + "+" + db_method_conn + "://" + db_user + ":" + db_password + "@" + db_hostname + ":" + db_port_id + "/" + db_database)
-
+    
 #create function to compare player combat stats and quest progression
 def compareCurrentPlayerStatus(insertedPlayerNameP1, insertedPlayerNameP2):
+
+    #p1 sql query
+    sql_compareCurrentPlayerStatus_p1 = str("SELECT * FROM main_runescape_status WHERE player_name = '" + insertedPlayerNameP1 + "' AND datesync_date = '" + currentDate + "'")
+
+    #p1 create dataframe
+    df_CompareCurrentStatus_p1 = pd.read_sql(sql=sql_compareCurrentPlayerStatus_p1, con=engine)
+
+    #p1 check if dataframe contains data
+    if df_CompareCurrentStatus_p1.empty:
+        df_CompareCurrentStatus_p1_checkContent = 0
+    else:
+        df_CompareCurrentStatus_p1_checkContent = 1
     
-    #retrieve data from DB
-    df_retrieveCurrentStatus = pd.read_sql_table('main_runescape_status', engine)
+    #p2 sql query
+    sql_compareCurrentPlayerStatus_p2 = str("SELECT * FROM main_runescape_status WHERE player_name = '" + insertedPlayerNameP2 + "' AND datesync_date = '" + currentDate + "'")
 
-    #create new dataframe for P1 > use .loc with with currentDate on datesync_date and insertedPlayerNameP1 on player_name
-    df_currentStatusSorted_p1 = df_retrieveCurrentStatus.loc[(df_retrieveCurrentStatus['player_name'] == insertedPlayerNameP1) & (df_retrieveCurrentStatus['datesync_date'] == currentDate)]
+    #p2 create dataframe
+    df_CompareCurrentStatus_p2 = pd.read_sql(sql=sql_compareCurrentPlayerStatus_p2, con=engine)
 
-    #create check value to verify presence of values in status dataframe for P1
-    checkValueP1 = df_currentStatusSorted_p1.shape[0]
-    if checkValueP1 > 0:
-        checkValueP1_return = 1
+    #p2 check if dataframe contains data
+    if df_CompareCurrentStatus_p2.empty:
+        df_CompareCurrentStatus_p2_checkContent = 0
     else:
-        checkValueP1_return = 0
+        df_CompareCurrentStatus_p2_checkContent = 1
 
-    #create new dataframe for P2 > use .loc with with currentDate on datesync_date and insertedPlayerNameP2 on player_name
-    df_currentStatusSorted_p2 = df_retrieveCurrentStatus.loc[(df_retrieveCurrentStatus['player_name'] == insertedPlayerNameP2) & (df_retrieveCurrentStatus['datesync_date'] == currentDate)]
+    #return following if both dataframes (p1 and p2) contain data
+    if df_CompareCurrentStatus_p1_checkContent == 1 and df_CompareCurrentStatus_p2_checkContent == 1:
 
-    #create check value to verify presence of values in status dataframe for P2
-    checkValueP2 = df_currentStatusSorted_p2.shape[0]
-    if checkValueP2 > 0:
-        checkValueP2_return = 1
+        #creating objects for p1 and p2 data to include in return
+        combatLevel_p1 = str(df_CompareCurrentStatus_p1.iloc[0]['combat_level'])
+        combatLevel_p2 = str(df_CompareCurrentStatus_p2.iloc[0]['combat_level'])
+
+        questsCompleted_p1 = str(df_CompareCurrentStatus_p1.iloc[0]['quests_completed'])
+        questsCompleted_p2 = str(df_CompareCurrentStatus_p2.iloc[0]['quests_completed'])
+
+        questsStarted_p1 = str(df_CompareCurrentStatus_p1.iloc[0]['quests_started'])
+        questsStarted_p2 = str(df_CompareCurrentStatus_p2.iloc[0]['quests_started'])
+
+        questsNotStarted_p1 = str(df_CompareCurrentStatus_p1.iloc[0]['quests_not_started'])
+        questsNotStarted_p2 = str(df_CompareCurrentStatus_p2.iloc[0]['quests_not_started'])
+
+        return ([df_CompareCurrentStatus_p1_checkContent, combatLevel_p1, questsCompleted_p1, questsStarted_p1, questsNotStarted_p1], 
+                [df_CompareCurrentStatus_p2_checkContent, combatLevel_p2, questsCompleted_p2, questsStarted_p2, questsNotStarted_p2])
+
     else:
-        checkValueP2_return = 0
-
-    #if both check values return 1, fetch data from both dataframes
-    if checkValueP1_return == 1 and checkValueP2_return == 1:
-
-        #creating P1 stat opjects
-        p1_combatLevel = str(df_currentStatusSorted_p1.iloc[0]['combat_level'])
-        p1_questsCompleted = str(df_currentStatusSorted_p1.iloc[0]['quests_completed'])
-        p1_questsStarted = str(df_currentStatusSorted_p1.iloc[0]['quests_started'])
-        p1_questsNotStarted = str(df_currentStatusSorted_p1.iloc[0]['quests_not_started'])
-
-        #creating P2 stat opjects
-        p2_combatLevel = str(df_currentStatusSorted_p2.iloc[0]['combat_level'])
-        p2_questsCompleted = str(df_currentStatusSorted_p2.iloc[0]['quests_completed'])
-        p2_questsStarted = str(df_currentStatusSorted_p2.iloc[0]['quests_started'])
-        p2_questsNotStarted = str(df_currentStatusSorted_p2.iloc[0]['quests_not_started'])
-
-        return ([checkValueP1_return, checkValueP2_return],
-                [p1_combatLevel, p1_questsCompleted, p1_questsStarted, p1_questsNotStarted], 
-                [p2_combatLevel, p2_questsCompleted, p2_questsStarted, p2_questsNotStarted])
-    
-    #return else if either checkValueP1_return or checkValueP2_return, or both, are 0
-    else:
-        return ([checkValueP1_return, checkValueP2_return],  ##probaly need to adjust this later since now we're sending both values twice. Works for now though.
-                [checkValueP1_return, checkValueP2_return])
+        return ([df_CompareCurrentStatus_p1_checkContent], 
+                [df_CompareCurrentStatus_p2_checkContent])
 
 #create function to compare player levels
 def compareCurrentPlayerSkills(insertedPlayerNameP1, insertedPlayerNameP2):

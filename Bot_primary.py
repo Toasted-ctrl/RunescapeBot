@@ -389,7 +389,7 @@ def run_discord_bot():
         returnStatus = Lookup_PlayerCurrentCompare.compareCurrentPlayerStatus(playerName1, playerName2)
         
         #checks if Status dataframe contains data. If it does contain data, return pCurrentCompare
-        if returnStatus[0][0] == 1 and returnStatus[0][1] == 1:
+        if returnStatus[0][0] == 1 and returnStatus[1][0] == 1:
 
             #requesting other tables from DONE_Lookup_PlayerCurrentCompare
             returnHiscores = Lookup_PlayerCurrentCompare.compareCurrentPlayerSkills(playerName1, playerName2)
@@ -399,10 +399,10 @@ def run_discord_bot():
             #creating table to compare both player's combat level and quest progression using returnStatus
             statusTable = t2a(
                 header=["Combat level/quest progression", playerName1 + "'s score", playerName2 + "'s score"],
-                body=[['Combat level', returnStatus[1][0], returnStatus[2][0]],
-                    ['Quests completed', returnStatus[1][1], returnStatus[2][1]],
-                    ['Quests started', returnStatus[1][2], returnStatus[2][2]],
-                    ['Quests not started', returnStatus[1][3], returnStatus[2][3]]],
+                body=[['Combat level', returnStatus[0][1], returnStatus[1][1]],
+                    ['Quests completed', returnStatus[0][2], returnStatus[1][2]],
+                    ['Quests started', returnStatus[0][3], returnStatus[1][3]],
+                    ['Quests not started', returnStatus[0][4], returnStatus[1][4]]],
                 style=PresetStyle.thin_compact
             )
 
@@ -440,15 +440,15 @@ def run_discord_bot():
             await ctx.send(f"```\n{achievementsTable}\n```")
         
         #if data missing for P1, return below
-        elif returnStatus[0][0] == 0 and returnStatus[0][1] == 1:
-            await ctx.send(f"Data for {playerName1} is missing from database.")
+        elif returnStatus[0][0] == 0 and returnStatus[1][0] == 1:
+            await ctx.send(f"Error: Data for {playerName1} is missing from database.")
 
         #if data missing for P2, return below
-        elif returnStatus[0][0] == 1 and returnStatus[0][1] == 0:
-            await ctx.send(f"Data for {playerName2} is missing from database.")
+        elif returnStatus[0][0] == 1 and returnStatus[1][0] == 0:
+            await ctx.send(f"Error: Data for {playerName2} is missing from database.")
 
         #return below if data is missing for both P1 and P2
         else:
-            await ctx.send(f"Data for {playerName1} and {playerName2}is missing from database.")
+            await ctx.send(f"Error: Data for both players ({playerName1} and {playerName2}) is missing from database.")
     
     bot.run(TOKEN)
