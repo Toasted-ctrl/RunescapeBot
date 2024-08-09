@@ -314,7 +314,7 @@ def run_discord_bot():
         returnStatus = Lookup_PlayerCurrentStatus.playerCurrentStatus(playerName)
         
         #check if returnStatus[0][0] returns 1. If so, then return currentHiscore
-        if returnStatus[0][0] == 1:
+        if returnStatus[0] == 1:
         
             returnHiscores = Lookup_PlayerCurrentStatus.playerCurrentHiscores(playerName)
             returnActivities = Lookup_PlayerCurrentStatus.playerCurrentActivities(playerName)
@@ -323,10 +323,10 @@ def run_discord_bot():
             #creating table with current combat and quest stats using returnStatus
             statusTable = t2a(
                 header=["Combat level/Quest progression", "Score"],
-                body=[['Combat level', returnStatus[1][0]], 
-                    ['Quests completed', returnStatus[1][1]], 
-                    ['Quests started', returnStatus[1][2]], 
-                    ['Quests not started', returnStatus[1][3]]],
+                body=[['Combat level', returnStatus[1]], 
+                    ['Quests completed', returnStatus[2]], 
+                    ['Quests started', returnStatus[3]], 
+                    ['Quests not started', returnStatus[4]]],
                 style=PresetStyle.thin_compact
             )
 

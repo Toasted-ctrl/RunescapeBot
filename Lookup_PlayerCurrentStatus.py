@@ -23,21 +23,22 @@ currentDate = str(datetime.date.today())
 #create function to retrieve player current hiscore stats
 def playerCurrentHiscores(insertedPlayerName):
 
-    #retrieve data from DB
-    df_retrieve_playerCurrentHiscores = pd.read_sql_table('main_runescape_hiscores', engine)
+    #sql for dataframe creation
+    sql_playerCurrentHiscores = str(f"SELECT * FROM main_runescape_hiscores WHERE player_name = '{insertedPlayerName}' AND datesync_date = '{currentDate}'")
 
-    #create new dataframe by using .loc with insertedPlayerName on player_name and currentDate on datesync_date
-    df_processed_playerCurrentHiscores = df_retrieve_playerCurrentHiscores.loc[(df_retrieve_playerCurrentHiscores['player_name'] == insertedPlayerName) & (df_retrieve_playerCurrentHiscores['datesync_date'] == currentDate)]
+    #create dataframe
+    df_playerCurrentHiscores = pd.read_sql(sql=sql_playerCurrentHiscores, con=engine)
 
-    skill_0 = df_processed_playerCurrentHiscores.iloc[0]['skill']
-    rank_0 = df_processed_playerCurrentHiscores.iloc[0]['rank']
-    level_0 = df_processed_playerCurrentHiscores.iloc[0]['level']
-    experience_0 = df_processed_playerCurrentHiscores.iloc[0]['experience']
+    #objects to include in return
+    skill_0 = df_playerCurrentHiscores.iloc[0]['skill']
+    rank_0 = df_playerCurrentHiscores.iloc[0]['rank']
+    level_0 = df_playerCurrentHiscores.iloc[0]['level']
+    experience_0 = df_playerCurrentHiscores.iloc[0]['experience']
 
-    skill_1 = df_processed_playerCurrentHiscores.iloc[1]['skill']
-    rank_1 = df_processed_playerCurrentHiscores.iloc[1]['rank']
-    level_1 = df_processed_playerCurrentHiscores.iloc[1]['level']
-    experience_1 = df_processed_playerCurrentHiscores.iloc[1]['experience']
+    skill_1 = df_playerCurrentHiscores.iloc[1]['skill']
+    rank_1 = df_playerCurrentHiscores.iloc[1]['rank']
+    level_1 = df_playerCurrentHiscores.iloc[1]['level']
+    experience_1 = df_playerCurrentHiscores.iloc[1]['experience']
 
     #return values for when function is called from other program
     return(skill_0, rank_0, level_0, experience_0,
@@ -46,21 +47,22 @@ def playerCurrentHiscores(insertedPlayerName):
 #create function to retrieve player current activities stats
 def playerCurrentActivities(insertedPlayerName):
 
-    #retrieve data from DB
-    df_retrieve_playerCurrentActivities = pd.read_sql_table('main_runescape_achievements', engine)
+    #sql for dataframe creation
+    sql_playerCurrentActivities = str(f"SELECT * FROM main_runescape_achievements WHERE player_name = '{insertedPlayerName}' AND datesync_date = '{currentDate}'")
 
-    #create new dataframe by using .loc with insertedPlayerName on player_name and currentDate on datesync_date
-    df_processed_playerCurrentActivities = df_retrieve_playerCurrentActivities[(df_retrieve_playerCurrentActivities['player_name'] == insertedPlayerName) & (df_retrieve_playerCurrentActivities['datesync_date'] == currentDate)]
+    #create dataframe
+    df_playerCurrentActivities = pd.read_sql(sql=sql_playerCurrentActivities, con=engine)
 
-    activity_0 = df_processed_playerCurrentActivities.iloc[0]['activity']
-    rank_0 = df_processed_playerCurrentActivities.iloc[0]['rank']
-    score_0 = df_processed_playerCurrentActivities.iloc[0]['score']
-    activity_1 = df_processed_playerCurrentActivities.iloc[1]['activity']
-    rank_1 = df_processed_playerCurrentActivities.iloc[1]['rank']
-    score_1 = df_processed_playerCurrentActivities.iloc[1]['score']
-    activity_2 = df_processed_playerCurrentActivities.iloc[2]['activity']
-    rank_2 = df_processed_playerCurrentActivities.iloc[2]['rank']
-    score_2 = df_processed_playerCurrentActivities.iloc[2]['score']
+    #objects to include in return
+    activity_0 = df_playerCurrentActivities.iloc[0]['activity']
+    rank_0 = df_playerCurrentActivities.iloc[0]['rank']
+    score_0 = df_playerCurrentActivities.iloc[0]['score']
+    activity_1 = df_playerCurrentActivities.iloc[1]['activity']
+    rank_1 = df_playerCurrentActivities.iloc[1]['rank']
+    score_1 = df_playerCurrentActivities.iloc[1]['score']
+    activity_2 = df_playerCurrentActivities.iloc[2]['activity']
+    rank_2 = df_playerCurrentActivities.iloc[2]['rank']
+    score_2 = df_playerCurrentActivities.iloc[2]['score']
 
     #return values for when function is called from other program
     return (activity_0, rank_0, score_0, 
@@ -70,57 +72,60 @@ def playerCurrentActivities(insertedPlayerName):
 #create function to retrieve player current combat stats and quest progression
 def playerCurrentStatus(insertedPlayerName):
     
-    #retrieve data from DB
-    df_retrieve_playerCurrentStatus = pd.read_sql_table('main_runescape_status', engine)
+    #sql query
+    sql_playerCurrentStatus = str(f"SELECT * FROM main_runescape_status WHERE player_name = '{insertedPlayerName}' AND datesync_date = '{currentDate}'")
 
-    #create new dataframe by using .loc with insertedPlayerName on player_name and currentDate on datesync_date
-    df_processed_playerCurrentStatus = df_retrieve_playerCurrentStatus[(df_retrieve_playerCurrentStatus['player_name'] == insertedPlayerName) & (df_retrieve_playerCurrentStatus['datesync_date'] == currentDate)]
+    #create dataframe
+    df_playerCurrentStatus = pd.read_sql(sql=sql_playerCurrentStatus, con=engine)
 
-    checkValue = df_processed_playerCurrentStatus.shape[0]
-    if checkValue > 0:
-        checkValue_return = 1
+    if df_playerCurrentStatus.empty:
+        df_playerCurrentStatus_checkContent = 0
     else:
-        checkValue_return = 0
+        df_playerCurrentStatus_checkContent = 1
 
     #if checkValue is 1, retrieve all status stats from database
-    if checkValue_return == 1:
+    if df_playerCurrentStatus_checkContent == 1:
 
-        combatLevel = str(df_processed_playerCurrentStatus.iloc[0]['combat_level'])
-        questsCompleted = str(df_processed_playerCurrentStatus.iloc[0]['quests_completed'])
-        questsStarted = str(df_processed_playerCurrentStatus.iloc[0]['quests_started'])
-        questsNotStarted = str(df_processed_playerCurrentStatus.iloc[0]['quests_not_started'])
+        combatLevel = str(df_playerCurrentStatus.iloc[0]['combat_level'])
+        questsCompleted = str(df_playerCurrentStatus.iloc[0]['quests_completed'])
+        questsStarted = str(df_playerCurrentStatus.iloc[0]['quests_started'])
+        questsNotStarted = str(df_playerCurrentStatus.iloc[0]['quests_not_started'])
 
         #return values for when function is called from other program
-        return ([checkValue_return, checkValue_return],
-                [combatLevel, questsCompleted, questsStarted, questsNotStarted])
+        #return ([df_playerCurrentStatus_checkContent, df_playerCurrentStatus_checkContent],
+                #[combatLevel, questsCompleted, questsStarted, questsNotStarted])
+    
+        return ([df_playerCurrentStatus_checkContent, combatLevel, questsCompleted, questsStarted, questsNotStarted])
     
     else: ##should probably have a closer look at this later since we're just sending the same value 4x (two tuples)
-        return ([checkValue_return, checkValue_return],
-                [checkValue_return, checkValue_return])
+        #return ([df_playerCurrentStatus_checkContent, df_playerCurrentStatus_checkContent],
+                #[df_playerCurrentStatus_checkContent, df_playerCurrentStatus_checkContent])
+
+        return ([df_playerCurrentStatus_checkContent])
 
 #create function to retrieve player last achievements
 def playerLastAchievements(insertedPlayerName):
 
-    #retrieve data from DB
-    df_retrievePlayerLastFiveAchievements = pd.read_sql_table('main_runescape_activities_processed', engine)
+    #sql query
+    sql_playerLastAchievements = str(f"SELECT * FROM main_runescape_activities_processed WHERE player_name = '{insertedPlayerName}'")
 
-    #create new dataframe by using .loc with insertedPlayerName on player_name and currentDate on datesync_date
-    df_processedPlayerLastFiveAchievements = df_retrievePlayerLastFiveAchievements[(df_retrievePlayerLastFiveAchievements['player_name'] == insertedPlayerName)]
+    #create dataframe
+    df_playerLastAchievements = pd.read_sql(sql=sql_playerLastAchievements, con=engine)
 
-    eventDateTime_0 = df_processedPlayerLastFiveAchievements[['event_datetime_numeric', 'event_text']].sort_values('event_datetime_numeric', ascending=False).iloc[0]['event_datetime_numeric']
-    eventText_0 = df_processedPlayerLastFiveAchievements[['event_datetime_numeric', 'event_text']].sort_values('event_datetime_numeric', ascending=False).iloc[0]['event_text']
+    eventDateTime_0 = df_playerLastAchievements[['event_datetime_numeric', 'event_text']].sort_values('event_datetime_numeric', ascending=False).iloc[0]['event_datetime_numeric']
+    eventText_0 = df_playerLastAchievements[['event_datetime_numeric', 'event_text']].sort_values('event_datetime_numeric', ascending=False).iloc[0]['event_text']
 
-    eventDateTime_1 = df_processedPlayerLastFiveAchievements[['event_datetime_numeric', 'event_text']].sort_values('event_datetime_numeric', ascending=False).iloc[1]['event_datetime_numeric']
-    eventText_1 = df_processedPlayerLastFiveAchievements[['event_datetime_numeric', 'event_text']].sort_values('event_datetime_numeric', ascending=False).iloc[1]['event_text']
+    eventDateTime_1 = df_playerLastAchievements[['event_datetime_numeric', 'event_text']].sort_values('event_datetime_numeric', ascending=False).iloc[1]['event_datetime_numeric']
+    eventText_1 = df_playerLastAchievements[['event_datetime_numeric', 'event_text']].sort_values('event_datetime_numeric', ascending=False).iloc[1]['event_text']
 
-    eventDateTime_2 = df_processedPlayerLastFiveAchievements[['event_datetime_numeric', 'event_text']].sort_values('event_datetime_numeric', ascending=False).iloc[2]['event_datetime_numeric']
-    eventText_2 = df_processedPlayerLastFiveAchievements[['event_datetime_numeric', 'event_text']].sort_values('event_datetime_numeric', ascending=False).iloc[2]['event_text']
+    eventDateTime_2 = df_playerLastAchievements[['event_datetime_numeric', 'event_text']].sort_values('event_datetime_numeric', ascending=False).iloc[2]['event_datetime_numeric']
+    eventText_2 = df_playerLastAchievements[['event_datetime_numeric', 'event_text']].sort_values('event_datetime_numeric', ascending=False).iloc[2]['event_text']
 
-    eventDateTime_3 = df_processedPlayerLastFiveAchievements[['event_datetime_numeric', 'event_text']].sort_values('event_datetime_numeric', ascending=False).iloc[3]['event_datetime_numeric']
-    eventText_3 = df_processedPlayerLastFiveAchievements[['event_datetime_numeric', 'event_text']].sort_values('event_datetime_numeric', ascending=False).iloc[3]['event_text']
+    eventDateTime_3 = df_playerLastAchievements[['event_datetime_numeric', 'event_text']].sort_values('event_datetime_numeric', ascending=False).iloc[3]['event_datetime_numeric']
+    eventText_3 = df_playerLastAchievements[['event_datetime_numeric', 'event_text']].sort_values('event_datetime_numeric', ascending=False).iloc[3]['event_text']
     
-    eventDateTime_4 = df_processedPlayerLastFiveAchievements[['event_datetime_numeric', 'event_text']].sort_values('event_datetime_numeric', ascending=False).iloc[4]['event_datetime_numeric']
-    eventText_4 = df_processedPlayerLastFiveAchievements[['event_datetime_numeric', 'event_text']].sort_values('event_datetime_numeric', ascending=False).iloc[4]['event_text']
+    eventDateTime_4 = df_playerLastAchievements[['event_datetime_numeric', 'event_text']].sort_values('event_datetime_numeric', ascending=False).iloc[4]['event_datetime_numeric']
+    eventText_4 = df_playerLastAchievements[['event_datetime_numeric', 'event_text']].sort_values('event_datetime_numeric', ascending=False).iloc[4]['event_text']
 
     #return values for when function is called from other program
     return (eventDateTime_0, eventText_0, 
