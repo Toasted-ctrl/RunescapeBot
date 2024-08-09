@@ -15,7 +15,7 @@ db_method_db = os.getenv("db_method_db")
 db_method_conn = os.getenv("db_method_conn")
 
 #create engine to retrieve data from DB
-engine = create_engine(db_method_db + "+" + db_method_conn + "://" + db_user + ":" + db_password + "@" + db_hostname + ":" + db_port_id + "/" + db_database)
+engine = create_engine(f"{db_method_db}+{db_method_conn}://{db_user}:{db_password}@{db_hostname}:{db_port_id}/{db_database}")
 
 #create currentDate datestamp for later filtering of dataframes
 currentDate = str(datetime.date.today())
