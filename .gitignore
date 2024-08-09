@@ -4,3 +4,7 @@
 #cache files
 .pyc
 __pycache__/
+
+#python test files
+Test_API_call.py
+Test_POSTGRES.py
