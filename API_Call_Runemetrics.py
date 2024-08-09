@@ -78,62 +78,100 @@ try:
         #creating datestamp
         current_date = datetime.date.today()
 
-        #create quest progression objects using json response
-        questsStarted = response.json()['questsstarted']
-        questsComplete = response.json()['questscomplete']
-        questsNotStarted = response.json()['questsnotstarted']
+        #if error exists in response, attempt below
+        if "error" in response.json():
+            print("User does not have a profile.")
+            print('\n')
 
-        #create combat stats objects using json response
-        magicExp = response.json()['magic']
-        meleeExp = response.json()['melee']
-        rangedExp = response.json()['ranged']
-        combatLevel = response.json()['combatlevel']
+            try:
+                conn = psycopg2.connect(
+                    host = db_hostname,
+                    dbname = db_database,
+                    user = db_user,
+                    password = db_password,
+                    port = db_port_id
+                    )
 
-        #connect to DB
-        try:
-            conn = psycopg2.connect(
-                host = db_hostname,
-                dbname = db_database,
-                user = db_user,
-                password = db_password,
-                port = db_port_id
-            )
+                #create cursor in order to interact with db
+                cur = conn.cursor()
 
-            #create cursor in order to interact with db
-            cur = conn.cursor()
+                #create insert script and values to insert for quest and combat stats
+                insert_script_flagged_username = 'INSERT INTO main_runescape_flagged_usernames (datesync_date, player_name, count) VALUES (%s, %s, %s)'
+                insert_values_flagged_username = (current_date, userName, 1)
+                cur.execute(insert_script_flagged_username, insert_values_flagged_username)
 
-            #create insert script and values to insert for quest and combat stats
-            insert_script_playerStats = 'INSERT INTO main_runescape_status (datesync_date, datesync_datetime, player_name, combat_level, ranged_exp, magic_exp, melee_exp, quests_started, quests_completed, quests_not_started) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)'
-            insert_values_platerStats = (current_date, current_date_timestamp, userName, combatLevel, rangedExp, magicExp, meleeExp, questsStarted, questsComplete, questsNotStarted)
-            cur.execute(insert_script_playerStats, insert_values_platerStats)
-
-            #commit changes to main_runescape_status DB
-            conn.commit()
-
-            #api call returns 20 most recent achievments and event logs. Defining range and create for loop to cycle through these achievements
-            for i in range(20):
-                mostRecentEvent_date = response.json()['activities'][i]['date']
-                mostRecentEvent_details = response.json()['activities'][i]['details']
-                mostRecentEvent_text = response.json()['activities'][i]['text']
-
-                #create insert script and values to insert for achievements and event logs
-                insert_script_playerActivites = 'INSERT INTO main_runescape_activities_imp (datesync_date, datesync_datetime, player_name, event_date, event_details, event_text) VALUES (%s, %s, %s, %s, %s, %s)'
-                insert_values_playerActivites = (current_date, current_date_timestamp, userName, mostRecentEvent_date, mostRecentEvent_details, mostRecentEvent_text)
-                cur.execute(insert_script_playerActivites, insert_values_playerActivites)
-
-                #commit changes to runescape_main_activities_imp
+                #commit changes to main_runescape_status DB
                 conn.commit()
 
-        #printing error if anything within the try: function did not execute  
-        except Exception as error_1:
-            print(error_1)
+            except Exception as error_3:
+                print(error_3)
 
-        #creating finally functions to close the cursor and DB connection
-        finally:
-            if cur is not None:
-                cur.close()
-            if conn is not None:
-                conn.close()
+            finally:
+                if cur is not None:
+                    cur.close()
+                if conn is not None:
+                    conn.close()
+
+        #if request.get does not result in 'error', attempt below
+        else:
+
+            try:
+
+                #create quest progression objects using json response
+                questsStarted = response.json()['questsstarted']
+                questsComplete = response.json()['questscomplete']
+                questsNotStarted = response.json()['questsnotstarted']
+
+                #create combat stats objects using json response
+                magicExp = response.json()['magic']
+                meleeExp = response.json()['melee']
+                rangedExp = response.json()['ranged']
+                combatLevel = response.json()['combatlevel']
+
+                #connect to DB
+                conn = psycopg2.connect(
+                    host = db_hostname,
+                    dbname = db_database,
+                    user = db_user,
+                    password = db_password,
+                    port = db_port_id
+                )
+
+                #create cursor in order to interact with db
+                cur = conn.cursor()
+
+                #create insert script and values to insert for quest and combat stats
+                insert_script_playerStats = 'INSERT INTO main_runescape_status (datesync_date, datesync_datetime, player_name, combat_level, ranged_exp, magic_exp, melee_exp, quests_started, quests_completed, quests_not_started) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)'
+                insert_values_platerStats = (current_date, current_date_timestamp, userName, combatLevel, rangedExp, magicExp, meleeExp, questsStarted, questsComplete, questsNotStarted)
+                cur.execute(insert_script_playerStats, insert_values_platerStats)
+
+                #commit changes to main_runescape_status DB
+                conn.commit()
+
+                #api call returns 20 most recent achievments and event logs. Defining range and create for loop to cycle through these achievements
+                for i in range(20):
+                    mostRecentEvent_date = response.json()['activities'][i]['date']
+                    mostRecentEvent_details = response.json()['activities'][i]['details']
+                    mostRecentEvent_text = response.json()['activities'][i]['text']
+
+                    #create insert script and values to insert for achievements and event logs
+                    insert_script_playerActivites = 'INSERT INTO main_runescape_activities_imp (datesync_date, datesync_datetime, player_name, event_date, event_details, event_text) VALUES (%s, %s, %s, %s, %s, %s)'
+                    insert_values_playerActivites = (current_date, current_date_timestamp, userName, mostRecentEvent_date, mostRecentEvent_details, mostRecentEvent_text)
+                    cur.execute(insert_script_playerActivites, insert_values_playerActivites)
+
+                    #commit changes to runescape_main_activities_imp
+                    conn.commit()
+
+            #printing error if anything within the try: function did not execute  
+            except Exception as error_1:
+                print(error_1)
+
+            #creating finally functions to close the cursor and DB connection
+            finally:
+                if cur is not None:
+                    cur.close()
+                if conn is not None:
+                    conn.close()
     
 #printing error if anything within the try: function did not execute  
 except Exception as error_2:
