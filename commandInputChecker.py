@@ -13,11 +13,17 @@ def checkDateOrder(firstInsertedDate, secondInsertedDate):
 
     if firstInsertedDate < secondInsertedDate:
         dateStatus = 1
+        firstDate = firstInsertedDate
+        secondDate = secondInsertedDate
 
     elif firstInsertedDate > secondInsertedDate:
         dateStatus = 2
+        firstDate = secondInsertedDate
+        secondDate = firstInsertedDate
 
     elif firstInsertedDate == secondInsertedDate:
         dateStatus = 0
+        firstDate = firstInsertedDate
+        secondDate = secondInsertedDate
 
-    return (dateStatus)
+    return (dateStatus, firstDate, secondDate)
