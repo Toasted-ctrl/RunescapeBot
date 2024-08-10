@@ -35,7 +35,7 @@ def dxpBetweenTwoDates(firstInsertedDate, SecondInsertedDate):
     df_dxpBetweenTwoDates_secondInsertedDate = pd.read_sql(sql=sql_dxpBetweenTwoDates_secondInsertedDate, con=engine)
 
     #merge both dataframes
-    df_dxpBetweenTwoDates_merged = pd.merge(df_dxpBetweenTwoDates_firstInsertedDate, df_dxpBetweenTwoDates_secondInsertedDate, on='player_name', how='left')
+    df_dxpBetweenTwoDates_merged = pd.merge(df_dxpBetweenTwoDates_firstInsertedDate, df_dxpBetweenTwoDates_secondInsertedDate, on='player_name', how='inner')
 
     #create new experience_gained column
     df_dxpBetweenTwoDates_merged['experience_gained'] = df_dxpBetweenTwoDates_merged['experience_y'] - df_dxpBetweenTwoDates_merged['experience_x']
@@ -44,8 +44,8 @@ def dxpBetweenTwoDates(firstInsertedDate, SecondInsertedDate):
     df_dxpBetweenTwoDates_sorted = df_dxpBetweenTwoDates_merged.sort_values(by='experience_gained', ascending=False)
 
     #create x and y value lists based on sorted dataframe
-    x = df_dxpBetweenTwoDates_sorted['player_name'].tolist()
-    y = df_dxpBetweenTwoDates_sorted['experience_gained'].tolist()
+    x = df_dxpBetweenTwoDates_sorted['player_name'].head(10).tolist()
+    y = df_dxpBetweenTwoDates_sorted['experience_gained'].head(10).tolist()
 
     #draw plot for experience gained
     fig, ax = plt.subplots(figsize=(12,6))
@@ -55,7 +55,7 @@ def dxpBetweenTwoDates(firstInsertedDate, SecondInsertedDate):
 
     #set x and y labels on plot
     plt.xlabel('Player Name')
-    plt.ylabel('Experience Gained (in Millions)')
+    plt.ylabel('Experience Gained')
 
     #set title on plot
     plt.title(f"Experience gained between {firstInsertedDate} and {SecondInsertedDate}")
@@ -63,7 +63,16 @@ def dxpBetweenTwoDates(firstInsertedDate, SecondInsertedDate):
     #save plot as 'ExperienceGainedBetweenTwoDates
     fig.savefig('ExperienceGainedBetweenTwoDates.png')
 
-    #return 1 after completeion to signal to Bot_primary that the image can be submitted to discord
-    return ([1])
+    #check if dataframe contains data:
+    if df_dxpBetweenTwoDates_sorted.empty:
+        df_dxpBetweenTwoDates_sorted_checkContent = 0
+    else:
+        df_dxpBetweenTwoDates_sorted_checkContent = 1
 
-dxpBetweenTwoDates('2024-05-31', '2024-08-09')
+    #return 1 after completeion to signal to Bot_primary that the image can be submitted to discord
+    if df_dxpBetweenTwoDates_sorted_checkContent == 1:
+        return ([1])
+    elif df_dxpBetweenTwoDates_sorted_checkContent == 0:
+        return ([0])
+
+dxpBetweenTwoDates('2024-08-08', '2024-08-10')
