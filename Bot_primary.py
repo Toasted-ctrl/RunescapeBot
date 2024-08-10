@@ -469,15 +469,12 @@ def run_discord_bot():
 
         #check if input data meets criteria
         if commandInputChecker.checkInputDate(firstInsertedDate) == 1 and commandInputChecker.checkInputDate(secondInsertedDate) == 1:
-            if commandInputChecker.checkDateOrder(firstInsertedDate, secondInsertedDate) == 1:
-                firstDate = firstInsertedDate
-                secondDate = secondInsertedDate
+            dateOrderCheck = commandInputChecker.checkDateOrder(firstInsertedDate, secondInsertedDate)
+            if dateOrderCheck[0] == 1:
                 inputMeetsCriteria = 1
-            elif commandInputChecker.checkDateOrder(firstInsertedDate, secondInsertedDate) == 2:
-                firstDate = secondInsertedDate
-                secondDate = firstInsertedDate
+            elif dateOrderCheck[0] == 2:
                 inputMeetsCriteria = 1
-            elif commandInputChecker.checkDateOrder(firstInsertedDate, secondInsertedDate) == 0:
+            elif dateOrderCheck[0] == 0:
                 inputMeetsCriteria = 0
         else:
             inputMeetsCriteria = 0
@@ -486,7 +483,7 @@ def run_discord_bot():
         if inputMeetsCriteria == 1:
 
             #creating returnstatus to determine whether graph can be sent to discord
-            returnStatus = Lookup_PlayerDxpChallenges.dxpBetweenTwoDates(firstDate, secondDate)
+            returnStatus = Lookup_PlayerDxpChallenges.dxpBetweenTwoDates(dateOrderCheck[1], dateOrderCheck[2])
 
             #create file to send in response
             file = discord.File("ExperienceGainedBetweenTwoDates.png", filename=(f"DXP_Experience Gained between {firstInsertedDate} and {secondInsertedDate}.png"))
