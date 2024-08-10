@@ -1,6 +1,7 @@
 import discord
 import Lookup_PlayerCurrentStatus
 import Lookup_PlayerCurrentCompare
+import Lookup_PlayerDxpChallenges
 import admin
 import datetime
 import os
@@ -376,7 +377,7 @@ def run_discord_bot():
     async def pCurrentCompare(ctx, playerName1, playerName2):
 
         #!help information message
-        """Answers with a current status/hiscores comparison of two indicated players"""
+        """Answers with a current status/hiscores comparison of two indicated players."""
 
         #create objects for usage in terminal event logger
         pCurrentCompare_timestamp = datetime.datetime.now()
@@ -450,5 +451,36 @@ def run_discord_bot():
         #return below if data is missing for both P1 and P2
         else:
             await ctx.send(f"Error: Data for both players ({playerName1} and {playerName2}) is missing from database.")
-    
+
+    @bot.command()
+    async def dxpChallenge (ctx, firstInsertedDate, secondInsertedDate):
+
+        #!help information message
+        """Returns graph of all tracked players and experience gained between two dates."""
+
+        #create objects for usage in terminal event logger
+        pCurrentCompare_timestamp = datetime.datetime.now()
+        commandAuthor = ctx.message.author
+
+        #print log of interaction in terminal
+        print(f"[{pCurrentCompare_timestamp}] {commandAuthor} used 'dxpChallenge' command with firstInsertedDate '{firstInsertedDate}' and secondInsertedDate '{secondInsertedDate}'.")
+
+        #check if firstInsertedDate meets criteria
+
+        #check if secondInsertedDate meets criteria
+
+        #create file to send in response
+        file = discord.File("ExperienceGainedBetweenTwoDates.png", filename=(f"Experience Gained between {firstInsertedDate} and {secondInsertedDate}.png"))
+
+        #creating returnstatus to determine whether graph can be sent to discord
+        returnStatus = Lookup_PlayerDxpChallenges.dxpBetweenTwoDates(firstInsertedDate, secondInsertedDate)
+
+        #if return status == 1, dxpBetweenTwoDates created a graph and the DataFrame is not empty.
+        if returnStatus[0] == 1:
+            await ctx.send(f"User used dxpChallenge command with firstInsertedDate: '{firstInsertedDate}', and secondInsertedDate: '{secondInsertedDate}'.", file=file)
+        elif returnStatus[0] == 0: #0 is returned if graph was generated but dataframe is empty.
+            await ctx.send(f"Error: returnStatus = '{returnStatus[0]}', DataFrame is empty with given parameters.")
+        else:
+            await ctx.send(f"Error: An unexpected error occured while creating graph.")
+
     bot.run(TOKEN)
