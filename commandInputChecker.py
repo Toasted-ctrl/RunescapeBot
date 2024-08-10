@@ -3,11 +3,9 @@ import re
 def checkInputDate(insertedDate):
     
     if re.match('^[0-9]{4}-[0-1]{1}[0-9]{1}-[0-3]{1}[0-9]{1}$', insertedDate):
-        insertedDate_checkFormat = 1
+        return (1)
     else:
-        insertedDate_checkFormat = 0
-
-    return (insertedDate_checkFormat)
+        return (0)
 
 def checkDateOrder(firstInsertedDate, secondInsertedDate):
 
@@ -27,3 +25,15 @@ def checkDateOrder(firstInsertedDate, secondInsertedDate):
         secondDate = secondInsertedDate
 
     return (dateStatus, firstDate, secondDate)
+
+def checkInputString(insertedString):
+
+    char_list = ['@', '!', '[', ']', '{', '}', '(', ')', ',', '/', '?', '+', '&', '$', '#', ';', ':', '*']
+
+    result = any(i in insertedString for i in char_list)
+
+    if result == True:
+        return(0)
+
+    elif result == False:
+        return(1)
