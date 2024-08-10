@@ -5,6 +5,8 @@ import Lookup_PlayerDxpChallenges
 import admin
 import datetime
 import os
+import re
+import commandInputChecker
 from dotenv import load_dotenv, dotenv_values
 from discord.ext import commands
 from table2ascii import table2ascii as t2a, PresetStyle
@@ -465,22 +467,37 @@ def run_discord_bot():
         #print log of interaction in terminal
         print(f"[{pCurrentCompare_timestamp}] {commandAuthor} used 'dxpChallenge' command with firstInsertedDate '{firstInsertedDate}' and secondInsertedDate '{secondInsertedDate}'.")
 
-        #check if firstInsertedDate meets criteria
-
-        #check if secondInsertedDate meets criteria
-
-        #create file to send in response
-        file = discord.File("ExperienceGainedBetweenTwoDates.png", filename=(f"Experience Gained between {firstInsertedDate} and {secondInsertedDate}.png"))
-
-        #creating returnstatus to determine whether graph can be sent to discord
-        returnStatus = Lookup_PlayerDxpChallenges.dxpBetweenTwoDates(firstInsertedDate, secondInsertedDate)
+        #check if input data meets criteria
+        if commandInputChecker.checkInputDate(firstInsertedDate) == 1 and commandInputChecker.checkInputDate(secondInsertedDate) == 1:
+            if commandInputChecker.checkDateOrder(firstInsertedDate, secondInsertedDate) == 1:
+                firstDate = firstInsertedDate
+                secondDate = secondInsertedDate
+                inputMeetsCriteria = 1
+            elif commandInputChecker.checkDateOrder(firstInsertedDate, secondInsertedDate) == 2:
+                firstDate = secondInsertedDate
+                secondDate = firstInsertedDate
+                inputMeetsCriteria = 1
+            elif commandInputChecker.checkDateOrder(firstInsertedDate, secondInsertedDate) == 0:
+                inputMeetsCriteria = 0
+        else:
+            inputMeetsCriteria = 0
 
         #if return status == 1, dxpBetweenTwoDates created a graph and the DataFrame is not empty.
-        if returnStatus[0] == 1:
-            await ctx.send(f"User used dxpChallenge command with firstInsertedDate: '{firstInsertedDate}', and secondInsertedDate: '{secondInsertedDate}'.", file=file)
-        elif returnStatus[0] == 0: #0 is returned if graph was generated but dataframe is empty.
-            await ctx.send(f"Error: returnStatus = '{returnStatus[0]}', DataFrame is empty with given parameters.")
+        if inputMeetsCriteria == 1:
+
+            #creating returnstatus to determine whether graph can be sent to discord
+            returnStatus = Lookup_PlayerDxpChallenges.dxpBetweenTwoDates(firstDate, secondDate)
+
+            #create file to send in response
+            file = discord.File("ExperienceGainedBetweenTwoDates.png", filename=(f"DXP_Experience Gained between {firstInsertedDate} and {secondInsertedDate}.png"))
+
+            if returnStatus[0] == 1:
+                await ctx.send(f"User used dxpChallenge command with firstInsertedDate: '{firstInsertedDate}', and secondInsertedDate: '{secondInsertedDate}'.", file=file)
+            elif returnStatus[0] == 0: #0 is returned if graph was generated but dataframe is empty.
+                await ctx.send(f"Error: returnStatus = '{returnStatus[0]}', DataFrame is empty with given parameters. Please try again with different dates.")
+            else:
+                await ctx.send(f"Error: An unexpected error occured while creating graph.")
         else:
-            await ctx.send(f"Error: An unexpected error occured while creating graph.")
+            await ctx.send(f"Error: Violation of date input criteria. Two differing dates must be provided, and they must be in YYYY-MM-DD format. The dates must be separated by a space.")
 
     bot.run(TOKEN)
