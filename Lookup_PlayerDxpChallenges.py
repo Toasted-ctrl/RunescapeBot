@@ -74,5 +74,3 @@ def dxpBetweenTwoDates(firstInsertedDate, SecondInsertedDate):
         return ([1])
     elif df_dxpBetweenTwoDates_sorted_checkContent == 0:
         return ([0])
-
-dxpBetweenTwoDates('2024-08-08', '2024-08-10')
