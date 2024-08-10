@@ -59,6 +59,7 @@ def dxpBetweenTwoDates(firstInsertedDate, SecondInsertedDate):
 
     #set title on plot
     plt.title(f"Experience gained between {firstInsertedDate} and {SecondInsertedDate}")
+    plt.suptitle("Output limited to the 10 highest performers")
 
     #save plot as 'ExperienceGainedBetweenTwoDates
     fig.savefig('ExperienceGainedBetweenTwoDates.png')
