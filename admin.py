@@ -7,6 +7,12 @@ import os
 #import dotenv modules to extract db credentials from .env file
 from dotenv import load_dotenv, dotenv_values
 
+#import create_engine from sqlalchemy in case a dataframe needs to be retrieved
+from sqlalchemy import create_engine
+
+#import pandas to create dataframe
+import pandas as pd
+
 #load dotenv file
 load_dotenv()
 
@@ -16,6 +22,10 @@ db_user = os.getenv("db_user")
 db_password = os.getenv("db_password")
 db_hostname = os.getenv("db_hostname")
 db_port_id = os.getenv("db_port_id")
+db_method_db = os.getenv("db_method_db")
+db_method_conn = os.getenv("db_method_conn")
+
+engine = create_engine(f"{db_method_db}+{db_method_conn}://{db_user}:{db_password}@{db_hostname}:{db_port_id}/{db_database}")
 
 conn = None
 cursor = None
@@ -331,3 +341,25 @@ def removeGlobalAdminFromAdminList(insertedDiscordName):
             cursor.close()
         if conn is not None:
             conn.close()
+
+#function to retrieve list of flagged users
+def checkFlagged():
+
+    #sql for retrieving dataframe
+    sql_checkFlagged = str(f"SELECT * FROM main_runescape_flagged_usernames ORDER BY player_name")
+
+    #create dataframe
+    df_checkFlagged = pd.read_sql(sql=sql_checkFlagged, con=engine)
+
+    #if dataframe is empty, return 0
+    if df_checkFlagged.empty:
+        
+        return([0])
+
+    #if dataframe is not empty, return number of flagged users and list of flagged users
+    else:
+
+        numberOfFlaggedUsers = int(len(df_checkFlagged['count']))
+        flaggedUsers_list = df_checkFlagged['player_name'].tolist()
+
+        return([numberOfFlaggedUsers], flaggedUsers_list)
