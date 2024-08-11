@@ -39,4 +39,4 @@ KNOWN ISSUES
 -  Currently the commands do not allow names with spaces in them to be handled, they will be interpreted as two separate inputs. A fix will be provided in the future.
 
 FUTURE IMPLEMENTATIONS
-1, Update tracking feature, to update a player's tracking/historical records/flagged_usernames entries.
+-  Update tracking feature, to update a player's tracking/historical records/flagged_usernames entries.
