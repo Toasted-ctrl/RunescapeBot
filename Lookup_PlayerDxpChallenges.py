@@ -39,6 +39,7 @@ def dxpBetweenTwoDates(firstInsertedDate, SecondInsertedDate):
 
     #create new experience_gained column
     df_dxpBetweenTwoDates_merged['experience_gained'] = df_dxpBetweenTwoDates_merged['experience_y'] - df_dxpBetweenTwoDates_merged['experience_x']
+    df_dxpBetweenTwoDates_merged['experience_gained'] = df_dxpBetweenTwoDates_merged['experience_gained'] / 1000000
 
     #create new dataframe, sorted by experience_gained, descending
     df_dxpBetweenTwoDates_sorted = df_dxpBetweenTwoDates_merged.sort_values(by='experience_gained', ascending=False)
@@ -55,7 +56,7 @@ def dxpBetweenTwoDates(firstInsertedDate, SecondInsertedDate):
 
     #set x and y labels on plot
     plt.xlabel('Player Name')
-    plt.ylabel('Experience Gained')
+    plt.ylabel('Experience Gained (in Millions)')
 
     #set title on plot
     plt.title(f"Experience gained between {firstInsertedDate} and {SecondInsertedDate}")
