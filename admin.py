@@ -572,5 +572,3 @@ def removePlayerFromFlaggedList(insertedPlayerName):
             cursor.close()
         if conn is not None:
             conn.close()
-
-removePlayerFromFlaggedList('CocoaToas')
