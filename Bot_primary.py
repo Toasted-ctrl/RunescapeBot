@@ -60,13 +60,13 @@ def run_discord_bot():
         #print log of interaction in terminal
         print(f"[{addTrackingFor_timestamp}] {commandAuthor} used 'addTracking' with player name '{playerName}'.")
 
-        #requesting admin rights for command author
-        adminRights = admin.retrieveAdminRights(str(commandAuthor))
-
         #input validation to check if any characters in input are forbidden
         userCheckInputString = commandInputChecker.checkInputString(playerName)
 
         if userCheckInputString == 1:
+
+            #requesting admin rights for command author
+            adminRights = admin.retrieveAdminRights(str(commandAuthor))
 
             #if user does not have admin rights, return:
             if adminRights[0] == 0:
@@ -351,6 +351,44 @@ def run_discord_bot():
 
         else:
             await ctx.send("Error: Violation of input criteria. Only characters A-Z, a-z, and 0-9 are allowed.")
+
+    #check content of main_runescape_flagged_usernames
+    @bot.command()
+    async def checkFlagged(ctx):
+
+        #!help information message
+        """Adds player to historical tracking. Will store daily hiscore/logs in database. Can only be used by Admins, Global Admins and Super Admins."""
+
+        #create objects for usage in terminal event logger, as well as commandAuthor for retrieving adminrights for discord user
+        addCheckFlagged_timestamp = datetime.datetime.now()
+        commandAuthor = ctx.message.author
+
+        #print log of interaction in terminal
+        print(f"[{addCheckFlagged_timestamp}] {commandAuthor} used 'checkFlagged'.")
+
+        #requesting admin rights for command author
+        adminRights = admin.retrieveAdminRights(str(commandAuthor))
+
+        #if user does not have admin rights, return:
+        if adminRights[0] == 0:
+            await ctx.send(f"Error: Access violation. {commandAuthor} does not have permission to add retrieve flagged_usernames'.")
+            
+        elif adminRights[0] == 1 and adminRights[2] == 1:
+            #check if player exists in tracked list prior to adding
+            checkedFlaggedList = admin.checkFlagged()
+
+            #if no players exist in flagged list, return below
+            if checkedFlaggedList[0][0] == 0:
+                await ctx.send("There are currently no players in flagged_usernames.")
+
+            #if players exist in flagged list, return below:
+            else:
+                numberOfUsersInFlaggedList = checkedFlaggedList[0][0]
+                usersInFlaggedList = checkedFlaggedList[1][:numberOfUsersInFlaggedList]
+                await ctx.send(f"There are currently {numberOfUsersInFlaggedList} names in flagged_usernames. Their usernames are: {usersInFlaggedList}.")
+
+        else:
+            await ctx.send("Error: An unexpected error occured.")
                 
     #currentHiscore command using playerName as arguments
     @bot.command()
