@@ -363,3 +363,90 @@ def checkFlagged():
         flaggedUsers_list = df_checkFlagged['player_name'].tolist()
 
         return([numberOfFlaggedUsers], flaggedUsers_list)
+    
+#function to check if player exists in tracked list
+def checkPlayerExistInFlaggedList(insertedPlayerName):
+
+    try:
+        conn = psycopg2.connect(
+            database = db_database,
+            host = db_hostname,
+            password = db_password,
+            user = db_user,
+            port = db_port_id
+        )
+
+        #creater cursor
+        cursor = conn.cursor()
+
+        #query to check if player_name exists in database
+        fetchQuery_playerInFlaggedList = "SELECT FROM main_runescape_flagged_usernames WHERE player_name = %s"
+
+        #execute query
+        cursor.execute(fetchQuery_playerInFlaggedList, [insertedPlayerName])
+
+        #fetch single line from DB
+        playerInList = cursor.fetchone()
+
+        #if query returns 0 rows, return 0, else return 1
+        if playerInList == None:
+            playerExistsInFlagged = 0
+        else:
+            playerExistsInFlagged = 1
+        
+        return (playerExistsInFlagged)
+    
+    #throw exception error if 'try' failed
+    except Exception as error_checkPlayerExistsInFlaggedList:
+        print(error_checkPlayerExistsInFlaggedList)
+
+    #always execute if parts of function fail
+    finally:
+        if cursor is not None:
+            cursor.close()
+        if conn is not None:
+            conn.close()
+
+#function to check if player exists in tracked list
+def checkPlayerExistInHiScores(insertedPlayerName):
+
+    try:
+        conn = psycopg2.connect(
+            database = db_database,
+            host = db_hostname,
+            password = db_password,
+            user = db_user,
+            port = db_port_id
+        )
+
+        #creater cursor
+        cursor = conn.cursor()
+
+        #query to check if player_name exists in database
+        fetchQuery_playerInHiscores = "SELECT FROM main_runescape_hiscores WHERE player_name = %s"
+
+        #execute query
+        cursor.execute(fetchQuery_playerInHiscores, [insertedPlayerName])
+
+        #fetch single line from DB
+        playerInList = cursor.fetchone()
+
+        #if query returns 0 rows, return 0, else return 1
+        if playerInList == None:
+            playerExistsInHiscore = 0
+        else:
+            playerExistsInHiscore = 1
+        
+        return (playerExistsInHiscore)
+    
+    #throw exception error if 'try' failed
+    except Exception as error_checkPlayerExistsInHiscore:
+        print(error_checkPlayerExistsInHiscore)
+
+    #always execute if parts of function fail
+    finally:
+        if cursor is not None:
+            cursor.close()
+        if conn is not None:
+            conn.close()
+
