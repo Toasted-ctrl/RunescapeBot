@@ -450,3 +450,127 @@ def checkPlayerExistInHiScores(insertedPlayerName):
         if conn is not None:
             conn.close()
 
+def updateTrackedUser(insertedPlayerName_old, insertedPlayerName_new):
+
+    try:
+        conn = psycopg2.connect(
+            database = db_database,
+            host = db_hostname,
+            password = db_password,
+            user = db_user,
+            port = db_port_id
+        )
+
+        #create cursor
+        cursor = conn.cursor()
+
+        #sql query for updating record
+        sql_updateTrackedUser = str(f"UPDATE main_runescape_tracked_usernames SET player_name = '{insertedPlayerName_new}' WHERE player_name = '{insertedPlayerName_old}'")
+
+        #execute query
+        cursor.execute(sql_updateTrackedUser)
+
+        #commit changes
+        conn.commit()
+
+    #throw exception error if 'try' failed
+    except Exception as error_updateTrackedUser:
+        print(error_updateTrackedUser)
+
+    #always execute if parts of function fail
+    finally:
+        if cursor is not None:
+            cursor.close()
+        if conn is not None:
+            conn.close()
+
+def updateHistoricalUserData(insertedPlayerName_old, insertedPlayerName_new):
+
+    try:
+        conn = psycopg2.connect(
+            database = db_database,
+            host = db_hostname,
+            password = db_password,
+            user = db_user,
+            port = db_port_id
+        )
+
+        #create cursor
+        cursor = conn.cursor()
+
+        #sql query for updating hiscore records
+        sql_updateHiscores = str(f"UPDATE main_runescape_hiscores SET player_name = '{insertedPlayerName_new}' WHERE player_name = '{insertedPlayerName_old}'")
+
+        #sql query for updating status records
+        sql_updateStatus = str(f"UPDATE main_runescape_status SET player_name = '{insertedPlayerName_new}' WHERE player_name = '{insertedPlayerName_old}'")
+
+        #sql query for updating achievements records
+        sql_updateAchievements = str(f"UPDATE main_runescape_achievements SET player_name = '{insertedPlayerName_new}' WHERE player_name = '{insertedPlayerName_old}'")
+
+        #sql query for updating activities_imp records
+        sql_updateActivities_imp = str(f"UPDATE main_runescape_activities_imp SET player_name = '{insertedPlayerName_new}' WHERE player_name = '{insertedPlayerName_old}'")
+
+        #sql query for updating activities_processed records 
+        sql_updateActivities_processed_substring = str(f"UPDATE main_runescape_activities_processed SET activities_unique_id = REPLACE(activities_unique_id, '{insertedPlayerName_old}', '{insertedPlayerName_new}') WHERE player_name = '{insertedPlayerName_old}'")
+
+        #sql query for updating activities_imp records
+        sql_updateActivities_processed = str(f"UPDATE main_runescape_activities_processed SET player_name = '{insertedPlayerName_new}' WHERE player_name = '{insertedPlayerName_old}'")
+
+        #execute query
+        cursor.execute(sql_updateHiscores)
+        cursor.execute(sql_updateStatus)
+        cursor.execute(sql_updateAchievements)
+        cursor.execute(sql_updateActivities_imp)
+        cursor.execute(sql_updateActivities_processed_substring)
+        cursor.execute(sql_updateActivities_processed)
+
+        #commit changes
+        conn.commit()
+
+    #throw exception error if 'try' failed
+    except Exception as error_updateHistoricalUserData:
+        print(error_updateHistoricalUserData)
+
+    #always execute if parts of function fail
+    finally:
+        if cursor is not None:
+            cursor.close()
+        if conn is not None:
+            conn.close()
+
+def removePlayerFromFlaggedList(insertedPlayerName):
+
+    try:
+        #create connection to db
+        conn = psycopg2.connect(
+            database = db_database,
+            host = db_hostname,
+            port = db_port_id,
+            user = db_user,
+            password = db_password
+        )
+
+        #create cursos
+        cursor = conn.cursor()
+
+        #create query to remove player name from db
+        removeQuery_playerInFlaggedList = str(f"DELETE FROM main_runescape_flagged_usernames WHERE player_name = '{insertedPlayerName}'")
+
+        #execute query
+        cursor.execute(removeQuery_playerInFlaggedList)
+
+        #commit change
+        conn.commit() 
+
+    #throw error if 'try' fails
+    except Exception as error_removeQuery_playerInFlaggedList:
+        print(error_removeQuery_playerInFlaggedList)
+
+    #execute at all times
+    finally:
+        if cursor is not None:
+            cursor.close()
+        if conn is not None:
+            conn.close()
+
+removePlayerFromFlaggedList('CocoaToas')
