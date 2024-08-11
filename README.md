@@ -39,4 +39,5 @@ KNOWN ISSUES
 -  Currently the commands do not allow names with spaces in them to be handled, they will be interpreted as two separate inputs. A fix will be provided in the future.
 
 FUTURE IMPLEMENTATIONS
--  Update tracking feature, to update a player's tracking/historical records/flagged_usernames entries.
+-  Implement updateTracking for if a player changed usernames. Should change both tracked_usernames, as well as historical records. Should also remove entry from flagged_usernames if present. Add check to block requested update if new username is already present in tracked_usernames.
+-  Update removeTracking to also remove username from flagged_usernames, if present.
