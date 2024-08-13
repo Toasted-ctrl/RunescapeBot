@@ -389,6 +389,98 @@ def run_discord_bot():
 
         else:
             await ctx.send("Error: An unexpected error occured.")
+
+    #check content of main_runescape_flagged_usernames
+    @bot.command()
+    async def updateTracking(ctx, playerName1, playerName2):
+
+        #!help information message
+        """Updates tracking, historical records, and removes old name from flagged_usernames if present. Requires old and new username."""
+
+        #create objects for usage in terminal event logger, as well as commandAuthor for retrieving adminrights for discord user
+        addCheckFlagged_timestamp = datetime.datetime.now()
+        commandAuthor = ctx.message.author
+
+        #print log of interaction in terminal
+        print(f"[{addCheckFlagged_timestamp}] {commandAuthor} used 'updateTracking' with '{playerName1}' and '{playerName2}'.")
+
+        #requesting admin rights for command author
+        adminRights = admin.retrieveAdminRights(str(commandAuthor))
+
+        #check if user input is valid
+        checkInputString_p1 = commandInputChecker.checkInputString(playerName1)
+        checkInputString_p2 = commandInputChecker.checkInputString(playerName2)
+
+        if checkInputString_p1 == 1 and checkInputString_p2 == 1:
+
+            #if user does not have admin rights, return:
+            if adminRights[0] == 0:
+                await ctx.send(f"Error: Access violation. {commandAuthor} does not have permission to add update records.")
+                
+            elif adminRights[0] == 1:
+                checkTrackedList_p1 = admin.checkPlayerExistsInTrackedList(playerName1)
+                checkTrackedList_p2 = admin.checkPlayerExistsInTrackedList(playerName2)
+
+                if checkTrackedList_p2 == 1:
+
+                    await ctx.send(f"Error: Duplication Violation. '{playerName2}' already exists in tracking. It is not allowed to update record if the new name already exists in main_runescape_tracked_usernames.")
+
+                elif checkTrackedList_p1 == 0:
+
+                    await ctx.send(f"Error: Missing data. '{playerName1}' does not exist tracking.")
+
+                elif checkTrackedList_p1 == 1 and checkTrackedList_p2 == 0:
+
+                    checkHiscores_p1 = admin.checkPlayerExistInHiScores(playerName1)
+                    checkHiscores_p2 = admin.checkPlayerExistInHiScores(playerName2)
+
+                    if checkHiscores_p2 == 1:
+
+                        await ctx.send(f"Error: Duplication Violation. '{playerName2}' already exists in hiscores. It is not allowed to update record if the second name already exists in main_runescape_hiscores.")
+
+                    elif checkHiscores_p1 == 0:
+
+                        await ctx.send(f"Error: Missing data. '{playerName1}' does not exist in hiscores.")
+
+                    elif checkHiscores_p1 == 1 and checkHiscores_p2 == 0:
+
+                        admin.updateTrackedUser(playerName1, playerName2)
+                        admin.updateHistoricalUserData(playerName1, playerName2)
+                        admin.removePlayerFromFlaggedList(playerName1)
+
+                        await ctx.send("Attempting to update records.")
+
+                        checkUpdateTrackingCompleted_p1 = admin.checkPlayerExistsInTrackedList(playerName2)
+
+                        checkUpdateHiscoresCompleted_p1 = admin.checkPlayerExistInHiScores(playerName2)
+
+                        checkUpdateFlagged = admin.checkPlayerExistInFlaggedList(playerName2)
+
+                        if checkUpdateTrackingCompleted_p1 == 1 and checkUpdateHiscoresCompleted_p1 == 1 and checkUpdateFlagged == 0:
+
+                            await ctx.send("Update completed.")
+
+                        elif checkUpdateTrackingCompleted_p1 == 0 or checkUpdateHiscoresCompleted_p1 == 0 or checkUpdateFlagged == 1:
+
+                            await ctx.send(f"Error: Incomplete update. Status {checkUpdateTrackingCompleted_p1}-{checkUpdateHiscoresCompleted_p1}-{checkUpdateFlagged}.")
+
+                        else:
+                            await ctx.send("Error: Possible incomplete update. Please contact Super Admin.")
+
+                    else:
+                        await ctx.send("Error: An unexpected error occured.")
+
+                else:
+                    await ctx.send("Error: An unexpected error occured.")
+                
+            else:
+                await ctx.send("Error: An unexpected error occured.")
+
+        elif checkInputString_p1 == 0 or checkInputString_p2 == 0:
+            await ctx.send(f"Error: Violation of input criteria. Only characters A-Z, a-z, and 0-9 are allowed.")
+
+        else:
+            await ctx.send(f"Error: An unexpected error occured.")
                 
     #currentHiscore command using playerName as arguments
     @bot.command()
