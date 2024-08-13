@@ -18,12 +18,14 @@ FUNCTIONS
 -  Allows users to lookup individual RuneScape player's stats (hiscores, recent achievements, activities, etc) if tracked.
 -  Allows users to compare two individual RuneScape player's stats (hiscores, recent achievements, activities, etc) if tracked.
 -  Allows users to request DXP challenge graphs, which outputs a graphs to Discord that compares all tracked players, based on two iput dates.
--  Allows admins to manage the bot through the Discord chat (add/remove tracking for players, add/remove new admins).
+-  Allows admins to manage the bot through the Discord chat (add/remove/update tracking for players, add/remove new admins).
 
 REQUIREMENTS
 -  This bot requires a database to be set up locally, and several tables within said database. Table requirements will be added at a later stage.
 
 RECENTLY ADDED
+
+[2024-08-13] Implemented updateTracking to allow admin to update records in case a user changed RuneScape usernames.
 
 [2024-08-11] Allow admins to retrieve list of flagged_usernames.
 
@@ -39,5 +41,4 @@ KNOWN ISSUES
 -  Currently the commands do not allow names with spaces in them to be handled, they will be interpreted as two separate inputs. A fix will be provided in the future.
 
 FUTURE IMPLEMENTATIONS
--  Implement updateTracking for if a player changed usernames. Should change both tracked_usernames, as well as historical records. Should also remove entry from flagged_usernames if present. Add check to block requested update if new username is already present in tracked_usernames.
 -  Update removeTracking to also remove username from flagged_usernames, if present.
