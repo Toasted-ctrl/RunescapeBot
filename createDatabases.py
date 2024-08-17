@@ -133,7 +133,7 @@ table_7_check = inspection.has_table(table_7_name)
 
 if table_7_check == False:
 
-    print(f"'{table_6_name}' = missing, attempting to create table.")
+    print(f"'{table_7_name}' = missing, attempting to create table.")
 
     class admin(Base):
         __tablename__ = table_7_name
