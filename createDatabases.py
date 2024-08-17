@@ -87,31 +87,43 @@ if table_4_check == False:
         datesync_datetime = Column(String(30), nullable=False)
         player_name = Column(String(30), primary_key=True, nullable=False)
         event_date = Column(String(30), primary_key=True, nullable=False)
-        event_details = Column(String(150), nullable=False)
+        event_details = Column(String(250), nullable=False)
         event_text = Column(String(50), primary_key=True, nullable=False)
 
     Base.metadata.create_all(engine)
 
-table_presence_main_runescape_activities_processed = inspection.has_table("main_runescape_activities_processed")
+table_5_name = "main_runescape_status"
+table_5_check = inspection.has_table(table_5_name)
 
-if table_presence_main_runescape_activities_processed == False:
-    print("activities_processed = missing")
+if table_5_check == False:
+    print(f"'{table_5_name}' = missing, attempting to create table.")
 
-elif table_presence_main_runescape_activities_processed == True:
-    print("activities_processed = present")
+    class status(Base):
+        __tablename__ = table_5_name
+        id = Column(BigInteger, primary_key=True, autoincrement=True, nullable=False)
+        datesync_date = Column(Date, nullable=False)
+        datesync_datetime = Column(String(30), nullable=False)
+        player_name = Column(String(30), primary_key=True, nullable=False)
+        combat_level = Column(Integer, nullable=False)
+        ranged_exp = Column(Integer, nullable=False)
+        magic_exp = Column(Integer, nullable=False)
+        melee_exp = Column(Integer, nullable=False)
+        quests_started = Column(Integer, nullable=False)
+        quests_completed = Column(Integer, nullable=False)
+        quests_not_started = Column(Integer, nullable=False)
 
-table_presence_main_runescape_status = inspection.has_table("main_runescape_status")
+    Base.metadata.create_all(engine)
 
-if table_presence_main_runescape_status == False:
-    print("status = missing")
+table_6_name = "main_runescape_flagged_usernames"
+table_6_check = inspection.has_table(table_6_name)
 
-elif table_presence_main_runescape_status == True:
-    print("status = present")
+if table_6_check == False:
+    print(f"'{table_6_name}' = missing, attempting to create table.")
 
-table_presence_main_runescape_flagged_usernames = inspection.has_table("main_runescape_flagged_usernames")
+    class flagged_usernames(Base):
+        __tablename__ = table_6_name
+        datesync_date = Column(Date, nullable=False)
+        player_name = Column(String(30), primary_key=True, nullable=False)
+        count = Column(Integer, nullable=False)
 
-if table_presence_main_runescape_flagged_usernames == False:
-    print("flagged_usernames = missing")
-
-elif table_presence_main_runescape_flagged_usernames == True:
-    print("flagged_usernames = present")
+    Base.metadata.create_all(engine)
