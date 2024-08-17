@@ -127,3 +127,20 @@ if table_6_check == False:
         count = Column(Integer, nullable=False)
 
     Base.metadata.create_all(engine)
+
+table_7_name = "main_runescape_admin"
+table_7_check = inspection.has_table(table_7_name)
+
+if table_7_check == False:
+
+    print(f"'{table_6_name}' = missing, attempting to create table.")
+
+    class admin(Base):
+        __tablename__ = table_7_name
+        discord_username = Column(String(40), primary_key=True, nullable=False)
+        admin_type = Column(String(15), nullable=False)
+        edit_admin = Column(Integer, nullable=False)
+        edit_admin_global = Column(Integer, nullable=False)
+        edit_admin_super = Column(Integer, nullable=False)
+
+    Base.metadata.create_all(engine)
