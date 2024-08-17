@@ -5,7 +5,7 @@
 
 from sqlalchemy import create_engine, inspect
 from sqlalchemy.orm import declarative_base
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer, String, BigInteger, Date
 import os
 from dotenv import dotenv_values, load_dotenv
 
@@ -19,9 +19,7 @@ db_user = os.getenv("db_user")
 db_method_db = os.getenv("db_method_db")
 db_method_conn = os.getenv("db_method_conn")
 
-db_database_test = os.getenv("db_database_test")
-
-engine = create_engine(f"{db_method_db}+{db_method_conn}://{db_user}:{db_password}@{db_hostname}:{db_port_id}/{db_database_test}")
+engine = create_engine(f"{db_method_db}+{db_method_conn}://{db_user}:{db_password}@{db_hostname}:{db_port_id}/{db_database}")
 
 inspection = inspect(engine)
 
@@ -40,29 +38,59 @@ if table_1_check == False:
 
     Base.metadata.create_all(engine)
 
-table_presence_main_runescape_hiscores = inspection.has_table("main_runescape_hiscores")
+table_2_name = "main_runescape_hiscores"
+table_2_check = inspection.has_table(table_2_name)
 
-if table_presence_main_runescape_hiscores == False:
-    print("hiscores = missing")
+if table_2_check == False:
+    print(f"'{table_2_name}' = missing, attempting to create table.")
 
-elif table_presence_main_runescape_hiscores == True:
-    print("hiscores = present")
+    class hiscores(Base):
+        __tablename__ = table_2_name
+        id = Column(BigInteger, primary_key=True, nullable=False)
+        datesync_date = Column(Date, nullable=False)
+        datesync_datetime = Column(String(30), nullable=False)
+        player_name = Column(String(30), nullable=False)
+        skill = Column(String(20), nullable=False)
+        rank = Column(Integer)
+        level = Column(Integer)
+        experience = Column(BigInteger)
 
-table_presence_main_runescape_achievements = inspection.has_table("main_runescape_achievements")
+    Base.metadata.create_all(engine)
 
-if table_presence_main_runescape_achievements == False:
-    print("achievements = missing")
+table_3_name = "main_runescape_achievements"
+table_3_check = inspection.has_table(table_3_name)
 
-elif table_presence_main_runescape_achievements == True:
-    print("achievements = present")
+if table_3_check == False:
+    print(f"'{table_3_name}' = missing, attempting to create table.")
 
-table_presence_main_runescape_activities_imp = inspection.has_table("main_runescape_activities_imp")
+    class achievements(Base):
+        __tablename__ = table_3_name
+        id = Column(BigInteger, primary_key=True, nullable=False)
+        datesync_date = Column(Date, nullable=False)
+        datesync_datetime = Column(String(30), nullable=False)
+        player_name = Column(String(30), nullable=False)
+        activity = Column(String(40), nullable=False)
+        rank = Column(Integer, nullable=False)
+        score = Column(Integer, nullable=False)
 
-if table_presence_main_runescape_activities_imp == False:
-    print("activities_imp = missing")
+    Base.metadata.create_all(engine)
 
-elif table_presence_main_runescape_activities_imp == True:
-    print("activities_imp = present")
+table_4_name = "main_runescape_activities_imp"
+table_4_check = inspection.has_table(table_4_name)
+
+if table_4_check == False:
+    print(f"'{table_4_name}' = missing, attempting to create table.")
+
+    class activities_imp(Base):
+        __tablename__ =  table_4_name
+        datesync_date = Column(Date, nullable=False)
+        datesync_datetime = Column(String(30), nullable=False)
+        player_name = Column(String(30), primary_key=True, nullable=False)
+        event_date = Column(String(30), primary_key=True, nullable=False)
+        event_details = Column(String(150), nullable=False)
+        event_text = Column(String(50), primary_key=True, nullable=False)
+
+    Base.metadata.create_all(engine)
 
 table_presence_main_runescape_activities_processed = inspection.has_table("main_runescape_activities_processed")
 
