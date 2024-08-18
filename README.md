@@ -21,9 +21,19 @@ FUNCTIONS
 -  Allows admins to manage the bot through the Discord chat (add/remove/update tracking for players, add/remove new admins).
 
 REQUIREMENTS
--  This bot requires a database to be set up locally, and several tables within said database. Table requirements will be added at a later stage.
+This bot requires PostgreSQL to be set up on the host machine. Run createDatabases.py once database is set up. Please also make sure to create a .env file that includes the following objects:
+-  BOT_TOKEN --> include Discord bot token.
+-  db_database --> include database name.
+-  db_password --> include database password.
+-  db_port_id --> include database port. Default port is "5432".
+-  db_hostname --> include database hostname. Should by default be "localhost" if running locally.
+-  db_user --> include database user.
+-  db_method_db --> should be set to "postgresql".
+-  db_method_conn --> should be set to "psycopg2".
 
 RECENTLY ADDED
+
+[2024-08-17] Added features to createDatabases.py. Running this scipt at the host machine will create all tables necessary. User must have set up PostgreSQL prior, see 'REQUIREMENTS' for more info.
 
 [2024-08-13] Implemented updateTracking to allow admin to update records in case a user changed RuneScape usernames.
 
