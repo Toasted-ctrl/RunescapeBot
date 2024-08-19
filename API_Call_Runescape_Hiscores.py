@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 #import module to create API calls
 import requests
 
