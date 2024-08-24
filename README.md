@@ -48,7 +48,8 @@ RECENTLY ADDED
 [2024-08-09] Capture usernames that have no profile when requesting date from public APIs. These usernames are stored in main_runescape_flagged_usernames.
 
 KNOWN ISSUES
--  Currently the commands do not allow names with spaces in them to be handled, they will be interpreted as two separate inputs. A fix will be provided in the future.
+-  KI002: Console will throw an error if records requested for a player, for which their records are present in the main_runescape_status, but missing from other tables required for retrieving records.
+-  KI001: Currently the commands do not allow names with spaces in them to be handled, they will be interpreted as two separate inputs. A fix will be provided in the future.
 
 FUTURE IMPLEMENTATIONS
 -  Update removeTracking to also remove username from flagged_usernames, if present.
