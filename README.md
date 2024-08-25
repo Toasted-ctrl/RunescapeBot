@@ -30,6 +30,7 @@ This bot requires PostgreSQL to be set up on the host machine. Run createDatabas
 -  db_user --> include database user.
 -  db_method_db --> should be set to "postgresql".
 -  db_method_conn --> should be set to "psycopg2".
+PLEASE ALSO MAKE SURE, IF ATTEMPTING TO RUN FROM A LINUX MACHINE, TO USE DOS2UNIX. FILE WILL OTHERWISE NOT EXECUTE AFTER USING CHMOD.
 
 RECENTLY ADDED
 
