@@ -34,6 +34,8 @@ PLEASE ALSO MAKE SURE, IF ATTEMPTING TO RUN FROM A LINUX MACHINE, TO USE DOS2UNI
 
 RECENTLY ADDED
 
+[2024-08-27] Bugfix (KI002). Fixed an issue where main.py would throw an error if user data was not present in at least one of the required tables for currentHiscore and pCurrentCompare, but would be present in returnStatus. Bot will now also reply in the Discord chat correctly, with missing data indication.
+
 [2024-08-17] Added features to createDatabases.py. Running this scipt at the host machine will create all tables necessary. User must have set up PostgreSQL prior, see 'REQUIREMENTS' for more info.
 
 [2024-08-13] Implemented updateTracking to allow admin to update records in case a user changed RuneScape usernames.
@@ -49,7 +51,6 @@ RECENTLY ADDED
 [2024-08-09] Capture usernames that have no profile when requesting date from public APIs. These usernames are stored in main_runescape_flagged_usernames.
 
 KNOWN ISSUES
--  KI002: Console will throw an error if records requested for a player, for which their records are present in the main_runescape_status, but missing from other tables required for retrieving records.
 -  KI001: Currently the commands do not allow names with spaces in them to be handled, they will be interpreted as two separate inputs. A fix will be provided in the future.
 
 FUTURE IMPLEMENTATIONS
