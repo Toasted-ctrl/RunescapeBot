@@ -651,7 +651,7 @@ def run_discord_bot():
                 await ctx.send(f"Error: Data for {playerName1} is missing from database. Return Status for {playerName1}: {databaseCheck_p1}.")
 
             #if data missing for P2, return below
-            elif databaseCheckCount_p1 == 4 and databaseCheckCount_p2 < 0:
+            elif databaseCheckCount_p1 == 4 and databaseCheckCount_p2 < 4:
                 await ctx.send(f"Error: Data for {playerName2} is missing from database. Return Status for {playerName2}: {databaseCheck_p2}.")
 
             #return below if data is missing for both P1 and P2
