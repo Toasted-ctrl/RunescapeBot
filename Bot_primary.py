@@ -501,12 +501,13 @@ def run_discord_bot():
 
         if userCheckInputString == 1:
         
-            #requesting data from DONE_Lookup_PlayerCurrentStatus by using playerName as argument
-            returnStatus = Lookup_PlayerCurrentStatus.playerCurrentStatus(playerName)
-            
+            #checking if player exists in all required databases
+            databaseCheck = commandInputChecker.checkDatabasePresence(playerName)
+
             #check if returnStatus[0][0] returns 1. If so, then return currentHiscore
-            if returnStatus[0] == 1:
-            
+            if databaseCheck[0] == 1 and databaseCheck[1] == 1 and databaseCheck[2] == 1 and databaseCheck[3] == 1:
+                
+                returnStatus = Lookup_PlayerCurrentStatus.playerCurrentStatus(playerName)
                 returnHiscores = Lookup_PlayerCurrentStatus.playerCurrentHiscores(playerName)
                 returnActivities = Lookup_PlayerCurrentStatus.playerCurrentActivities(playerName)
                 returnAchievements = Lookup_PlayerCurrentStatus.playerLastAchievements(playerName)
@@ -561,7 +562,8 @@ def run_discord_bot():
 
             #if returnStatus[0][0] does not return one, return below
             else:
-                await ctx.send(f"Data for {playerName} is missing from database.")
+
+                await ctx.send(f"Data for {playerName} is missing from database. Return Status: {databaseCheck}.")
 
         else:
             await ctx.send("Error: Violation of input criteria. Only characters A-Z, a-z, and 0-9 are allowed.")
@@ -586,12 +588,17 @@ def run_discord_bot():
         if userCheckInputString_p1 == 1 and userCheckInputString_p2 == 1:
 
             #requesting data from DONE_Lookup_PlayerCurrentCompare.compareCurrentPlayerStatus
-            returnStatus = Lookup_PlayerCurrentCompare.compareCurrentPlayerStatus(playerName1, playerName2)
+            databaseCheck_p1 = commandInputChecker.checkDatabasePresence(playerName1)
+            databaseCheck_p2 = commandInputChecker.checkDatabasePresence(playerName2)
+
+            databaseCheckCount_p1 = databaseCheck_p1[0] + databaseCheck_p1[1] + databaseCheck_p1[2] + databaseCheck_p1[3]
+            databaseCheckCount_p2 = databaseCheck_p2[0] + databaseCheck_p2[1] + databaseCheck_p2[2] + databaseCheck_p2[3]
             
             #checks if Status dataframe contains data. If it does contain data, return pCurrentCompare
-            if returnStatus[0][0] == 1 and returnStatus[1][0] == 1:
+            if databaseCheckCount_p1 == 4 and databaseCheckCount_p2 == 4:
 
                 #requesting other tables from DONE_Lookup_PlayerCurrentCompare
+                returnStatus = Lookup_PlayerCurrentCompare.compareCurrentPlayerStatus(playerName1, playerName2)
                 returnHiscores = Lookup_PlayerCurrentCompare.compareCurrentPlayerSkills(playerName1, playerName2)
                 returnActivities = Lookup_PlayerCurrentCompare.compareCurrentPlayerActivities(playerName1, playerName2)
                 returnAchievements = Lookup_PlayerCurrentCompare.compareLast30daysPlayerAchievements(playerName1, playerName2)
@@ -640,16 +647,16 @@ def run_discord_bot():
                 await ctx.send(f"```\n{achievementsTable}\n```")
             
             #if data missing for P1, return below
-            elif returnStatus[0][0] == 0 and returnStatus[1][0] == 1:
-                await ctx.send(f"Error: Data for {playerName1} is missing from database.")
+            elif databaseCheckCount_p1 < 4 and databaseCheckCount_p2 == 4:
+                await ctx.send(f"Error: Data for {playerName1} is missing from database. Return Status for {playerName1}: {databaseCheck_p1}.")
 
             #if data missing for P2, return below
-            elif returnStatus[0][0] == 1 and returnStatus[1][0] == 0:
-                await ctx.send(f"Error: Data for {playerName2} is missing from database.")
+            elif databaseCheckCount_p1 == 4 and databaseCheckCount_p2 < 0:
+                await ctx.send(f"Error: Data for {playerName2} is missing from database. Return Status for {playerName2}: {databaseCheck_p2}.")
 
             #return below if data is missing for both P1 and P2
             else:
-                await ctx.send(f"Error: Data for both players ({playerName1} and {playerName2}) is missing from database.")
+                await ctx.send(f"Error: Data for both players ('{playerName1}' and '{playerName2}') is missing from database. Return Status for {playerName1}: {databaseCheck_p1}. Return Status for {playerName2}: {databaseCheck_p2}.")
 
         else:
             await ctx.send("Error: Violation of input criteria. Only characters A-Z, a-z, and 0-9 are allowed.")
