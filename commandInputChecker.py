@@ -45,15 +45,20 @@ def checkDateOrder(firstInsertedDate, secondInsertedDate):
 
 def checkInputString(insertedString):
 
-    char_list = ['@', '!', '[', ']', '{', '}', '(', ')', ',', '/', '?', '+', '&', '$', '#', ';', ':', '*']
+    char_list = ['@', '!', '[', ']', '{', '}', '(', ')', ',', '/', '?', '&', '$', '#', ';', ':', '*', '_']
 
     result = any(i in insertedString for i in char_list)
 
     if result == True:
-        return(0)
+        return(0, insertedString)
 
     elif result == False:
-        return(1)
+
+        returnString = insertedString.replace('+', ' ')
+
+        return(1, returnString)
+
+checkInputString
     
 def checkDatabasePresence(insertedPlayerName):
 
