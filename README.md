@@ -30,7 +30,8 @@ This bot requires PostgreSQL to be set up on the host machine. Run createDatabas
 -  db_user --> include database user.
 -  db_method_db --> should be set to "postgresql".
 -  db_method_conn --> should be set to "psycopg2".\
-PLEASE ALSO MAKE SURE, IF ATTEMPTING TO RUN FROM A LINUX MACHINE, TO USE DOS2UNIX. FILE WILL OTHERWISE NOT EXECUTE AFTER USING CHMOD.
+\
+-  PLEASE ALSO MAKE SURE, IF ATTEMPTING TO RUN FROM A LINUX MACHINE, TO USE DOS2UNIX. FILE WILL OTHERWISE NOT EXECUTE AFTER USING CHMOD.
 
 RECENTLY ADDED
 [2024-08-28] Bugfix (KI001). Fixed issue where RuneScape usernames with spaces could not be accepted. Now if a name needs to be added/removed/searched for you can substitute a space with a '+'. The '+' is removed on the backend. This will ensure that two names can still be provided when two names are required for a command.
