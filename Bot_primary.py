@@ -63,35 +63,39 @@ def run_discord_bot():
         #input validation to check if any characters in input are forbidden
         userCheckInputString = commandInputChecker.checkInputString(playerName)
 
-        if userCheckInputString == 1:
+        #if userCheckInputString returns 1, follow below
+        if userCheckInputString[0] == 1:
+
+            #retrieving corrected playerName 
+            checkedPlayerName = userCheckInputString[1]
 
             #requesting admin rights for command author
             adminRights = admin.retrieveAdminRights(str(commandAuthor))
 
             #if user does not have admin rights, return:
             if adminRights[0] == 0:
-                await ctx.send(f"{commandAuthor} does not have permission to add tracking for '{playerName}'.")
+                await ctx.send(f"{commandAuthor} does not have permission to add tracking for '{checkedPlayerName}'.")
             
             elif adminRights[0] == 1 and adminRights[2] == 1:
                 #check if player exists in tracked list prior to adding
-                playerExistsInTracking_prior = admin.checkPlayerExistsInTrackedList(playerName)
+                playerExistsInTracking_prior = admin.checkPlayerExistsInTrackedList(checkedPlayerName)
 
                 #if player exists in tracking, return that player is already being tracked
                 if playerExistsInTracking_prior == 1:
-                    await ctx.send(f"Statistics for '{playerName}' are already tracked.")
+                    await ctx.send(f"Statistics for '{checkedPlayerName}' are already tracked.")
 
                 #if player does not exist in tracking, do following:
                 else:
                     #add player to tracked list
-                    admin.addPlayerToTrackedList(playerName)
+                    admin.addPlayerToTrackedList(checkedPlayerName)
                     
                     #check again if player was added to tracked list
-                    playerExistsInTracking_after = admin.checkPlayerExistsInTrackedList(playerName)
+                    playerExistsInTracking_after = admin.checkPlayerExistsInTrackedList(checkedPlayerName)
 
                     if playerExistsInTracking_after == 1:
-                        await ctx.send(f"Tracking was enabled for '{playerName}'.")
+                        await ctx.send(f"Tracking was enabled for '{checkedPlayerName}'.")
                     else:
-                        await ctx.send(f"Tracking could not be enabled for '{playerName}'.")
+                        await ctx.send(f"Tracking could not be enabled for '{checkedPlayerName}'.")
 
             else:
                 await ctx.send("Error: An unexpected error occured.")
@@ -119,34 +123,37 @@ def run_discord_bot():
         #input validation to check if any characters in input are forbidden
         userCheckInputString = commandInputChecker.checkInputString(playerName)
 
-        if userCheckInputString == 1:
+        if userCheckInputString[0] == 1:
+
+            #retrieving corrected playerName 
+            checkedPlayerName = userCheckInputString[1]
 
             #if user does not have admin rights, return:
             if adminRights[0] == 0:
-                await ctx.send(f"{commandAuthor} does not have permission to remove tracking for '{playerName}'.")
+                await ctx.send(f"{commandAuthor} does not have permission to remove tracking for '{checkedPlayerName}'.")
             
             elif adminRights[0] == 1 and adminRights[2] == 1:
                 #check if player exists in tracking before remove function
-                playerExistsInTracking_prior = admin.checkPlayerExistsInTrackedList(playerName)
+                playerExistsInTracking_prior = admin.checkPlayerExistsInTrackedList(checkedPlayerName)
 
                 #if player does not exist in tracked list, return:
                 if playerExistsInTracking_prior == 0:
-                    await ctx.send(f"'{playerName}' was already untracked.")
+                    await ctx.send(f"'{checkedPlayerName}' was already untracked.")
 
                 else:
                     #remove player from tracking list
-                    admin.removePlayerFromTrackedList(playerName)
+                    admin.removePlayerFromTrackedList(checkedPlayerName)
                     
                     #check if player exists in tracked list after remove function
-                    playerExistsInTracking_after = admin.checkPlayerExistsInTrackedList(playerName)
+                    playerExistsInTracking_after = admin.checkPlayerExistsInTrackedList(checkedPlayerName)
 
                     #if player was removed successfully, return:
                     if playerExistsInTracking_after == 0:
-                        await ctx.send(f"Tracking was disabled for '{playerName}'.")
+                        await ctx.send(f"Tracking was disabled for '{checkedPlayerName}'.")
                     
                     #if player was not successfully removed, return:
                     else:
-                        await ctx.send(f"Tracking could not be disabled for '{playerName}'.")
+                        await ctx.send(f"Tracking could not be disabled for '{checkedPlayerName}'.")
 
             else:
                 await ctx.send("Error: An unexpected error occured.")
@@ -411,50 +418,54 @@ def run_discord_bot():
         checkInputString_p1 = commandInputChecker.checkInputString(playerName1)
         checkInputString_p2 = commandInputChecker.checkInputString(playerName2)
 
-        if checkInputString_p1 == 1 and checkInputString_p2 == 1:
+        if checkInputString_p1[0] == 1 and checkInputString_p2[0] == 1:
 
             #if user does not have admin rights, return:
             if adminRights[0] == 0:
                 await ctx.send(f"Error: Access violation. {commandAuthor} does not have permission to add update records.")
                 
             elif adminRights[0] == 1:
-                checkTrackedList_p1 = admin.checkPlayerExistsInTrackedList(playerName1)
-                checkTrackedList_p2 = admin.checkPlayerExistsInTrackedList(playerName2)
+
+                checkedPlayerName_p1 = checkInputString_p1[1]
+                checkedPlayerName_p2 = checkInputString_p2[1]
+
+                checkTrackedList_p1 = admin.checkPlayerExistsInTrackedList(checkedPlayerName_p1)
+                checkTrackedList_p2 = admin.checkPlayerExistsInTrackedList(checkedPlayerName_p2)
 
                 if checkTrackedList_p2 == 1:
 
-                    await ctx.send(f"Error: Duplication Violation. '{playerName2}' already exists in tracking. It is not allowed to update record if the new name already exists in main_runescape_tracked_usernames.")
+                    await ctx.send(f"Error: Duplication Violation. '{checkedPlayerName_p2}' already exists in tracking. It is not allowed to update record if the new name already exists in main_runescape_tracked_usernames.")
 
                 elif checkTrackedList_p1 == 0:
 
-                    await ctx.send(f"Error: Missing data. '{playerName1}' does not exist tracking.")
+                    await ctx.send(f"Error: Missing data. '{checkedPlayerName_p1}' does not exist tracking.")
 
                 elif checkTrackedList_p1 == 1 and checkTrackedList_p2 == 0:
 
-                    checkHiscores_p1 = admin.checkPlayerExistInHiScores(playerName1)
-                    checkHiscores_p2 = admin.checkPlayerExistInHiScores(playerName2)
+                    checkHiscores_p1 = admin.checkPlayerExistInHiScores(checkedPlayerName_p1)
+                    checkHiscores_p2 = admin.checkPlayerExistInHiScores(checkedPlayerName_p2)
 
                     if checkHiscores_p2 == 1:
 
-                        await ctx.send(f"Error: Duplication Violation. '{playerName2}' already exists in hiscores. It is not allowed to update record if the second name already exists in main_runescape_hiscores.")
+                        await ctx.send(f"Error: Duplication Violation. '{checkedPlayerName_p2}' already exists in hiscores. It is not allowed to update record if the second name already exists in main_runescape_hiscores.")
 
                     elif checkHiscores_p1 == 0:
 
-                        await ctx.send(f"Error: Missing data. '{playerName1}' does not exist in hiscores.")
+                        await ctx.send(f"Error: Missing data. '{checkedPlayerName_p1}' does not exist in hiscores.")
 
                     elif checkHiscores_p1 == 1 and checkHiscores_p2 == 0:
 
-                        admin.updateTrackedUser(playerName1, playerName2)
-                        admin.updateHistoricalUserData(playerName1, playerName2)
-                        admin.removePlayerFromFlaggedList(playerName1)
+                        admin.updateTrackedUser(checkedPlayerName_p1, checkedPlayerName_p2)
+                        admin.updateHistoricalUserData(checkedPlayerName_p1, checkedPlayerName_p2)
+                        admin.removePlayerFromFlaggedList(checkedPlayerName_p1)
 
                         await ctx.send("Attempting to update records.")
 
-                        checkUpdateTrackingCompleted_p1 = admin.checkPlayerExistsInTrackedList(playerName2)
+                        checkUpdateTrackingCompleted_p1 = admin.checkPlayerExistsInTrackedList(checkedPlayerName_p2)
 
-                        checkUpdateHiscoresCompleted_p1 = admin.checkPlayerExistInHiScores(playerName2)
+                        checkUpdateHiscoresCompleted_p1 = admin.checkPlayerExistInHiScores(checkedPlayerName_p2)
 
-                        checkUpdateFlagged = admin.checkPlayerExistInFlaggedList(playerName2)
+                        checkUpdateFlagged = admin.checkPlayerExistInFlaggedList(checkedPlayerName_p2)
 
                         if checkUpdateTrackingCompleted_p1 == 1 and checkUpdateHiscoresCompleted_p1 == 1 and checkUpdateFlagged == 0:
 
@@ -476,7 +487,7 @@ def run_discord_bot():
             else:
                 await ctx.send("Error: An unexpected error occured.")
 
-        elif checkInputString_p1 == 0 or checkInputString_p2 == 0:
+        elif checkInputString_p1[0] == 0 or checkInputString_p2[0] == 0:
             await ctx.send(f"Error: Violation of input criteria. Only characters A-Z, a-z, and 0-9 are allowed.")
 
         else:
@@ -499,18 +510,20 @@ def run_discord_bot():
         #input validation to check if any characters in input are forbidden
         userCheckInputString = commandInputChecker.checkInputString(playerName)
 
-        if userCheckInputString == 1:
+        if userCheckInputString[0] == 1:
+
+            checkPlayerName = userCheckInputString[1]
         
             #checking if player exists in all required databases
-            databaseCheck = commandInputChecker.checkDatabasePresence(playerName)
+            databaseCheck = commandInputChecker.checkDatabasePresence(checkPlayerName)
 
             #check if returnStatus[0][0] returns 1. If so, then return currentHiscore
             if databaseCheck[0] == 1 and databaseCheck[1] == 1 and databaseCheck[2] == 1 and databaseCheck[3] == 1:
                 
-                returnStatus = Lookup_PlayerCurrentStatus.playerCurrentStatus(playerName)
-                returnHiscores = Lookup_PlayerCurrentStatus.playerCurrentHiscores(playerName)
-                returnActivities = Lookup_PlayerCurrentStatus.playerCurrentActivities(playerName)
-                returnAchievements = Lookup_PlayerCurrentStatus.playerLastAchievements(playerName)
+                returnStatus = Lookup_PlayerCurrentStatus.playerCurrentStatus(checkPlayerName)
+                returnHiscores = Lookup_PlayerCurrentStatus.playerCurrentHiscores(checkPlayerName)
+                returnActivities = Lookup_PlayerCurrentStatus.playerCurrentActivities(checkPlayerName)
+                returnAchievements = Lookup_PlayerCurrentStatus.playerLastAchievements(checkPlayerName)
 
                 #creating table with current combat and quest stats using returnStatus
                 statusTable = t2a(
@@ -551,7 +564,7 @@ def run_discord_bot():
                 )
 
                 #return tables to discord channel
-                await ctx.send(f'Overview for {playerName}.')
+                await ctx.send(f'Overview for {checkPlayerName}.')
                 await ctx.send(f"```\n{statusTable}\n```")
                 await ctx.send('Last Hiscore readings.')
                 await ctx.send(f"```\n{hiscoreTable}\n```")
@@ -563,7 +576,7 @@ def run_discord_bot():
             #if returnStatus[0][0] does not return one, return below
             else:
 
-                await ctx.send(f"Data for {playerName} is missing from database. Return Status: {databaseCheck}.")
+                await ctx.send(f"Data for {checkPlayerName} is missing from database. Return Status: {databaseCheck}.")
 
         else:
             await ctx.send("Error: Violation of input criteria. Only characters A-Z, a-z, and 0-9 are allowed.")
@@ -585,11 +598,14 @@ def run_discord_bot():
         userCheckInputString_p1 = commandInputChecker.checkInputString(playerName1)
         userCheckInputString_p2 = commandInputChecker.checkInputString(playerName2)
 
-        if userCheckInputString_p1 == 1 and userCheckInputString_p2 == 1:
+        if userCheckInputString_p1[0] == 1 and userCheckInputString_p2[0] == 1:
+
+            checkPlayerName_p1 = userCheckInputString_p1[1]
+            checkPlayerName_p2 = userCheckInputString_p2[1]
 
             #requesting data from DONE_Lookup_PlayerCurrentCompare.compareCurrentPlayerStatus
-            databaseCheck_p1 = commandInputChecker.checkDatabasePresence(playerName1)
-            databaseCheck_p2 = commandInputChecker.checkDatabasePresence(playerName2)
+            databaseCheck_p1 = commandInputChecker.checkDatabasePresence(checkPlayerName_p1)
+            databaseCheck_p2 = commandInputChecker.checkDatabasePresence(checkPlayerName_p2)
 
             databaseCheckCount_p1 = databaseCheck_p1[0] + databaseCheck_p1[1] + databaseCheck_p1[2] + databaseCheck_p1[3]
             databaseCheckCount_p2 = databaseCheck_p2[0] + databaseCheck_p2[1] + databaseCheck_p2[2] + databaseCheck_p2[3]
@@ -598,14 +614,14 @@ def run_discord_bot():
             if databaseCheckCount_p1 == 4 and databaseCheckCount_p2 == 4:
 
                 #requesting other tables from DONE_Lookup_PlayerCurrentCompare
-                returnStatus = Lookup_PlayerCurrentCompare.compareCurrentPlayerStatus(playerName1, playerName2)
-                returnHiscores = Lookup_PlayerCurrentCompare.compareCurrentPlayerSkills(playerName1, playerName2)
-                returnActivities = Lookup_PlayerCurrentCompare.compareCurrentPlayerActivities(playerName1, playerName2)
-                returnAchievements = Lookup_PlayerCurrentCompare.compareLast30daysPlayerAchievements(playerName1, playerName2)
+                returnStatus = Lookup_PlayerCurrentCompare.compareCurrentPlayerStatus(checkPlayerName_p1, checkPlayerName_p2)
+                returnHiscores = Lookup_PlayerCurrentCompare.compareCurrentPlayerSkills(checkPlayerName_p1, checkPlayerName_p2)
+                returnActivities = Lookup_PlayerCurrentCompare.compareCurrentPlayerActivities(checkPlayerName_p1, checkPlayerName_p2)
+                returnAchievements = Lookup_PlayerCurrentCompare.compareLast30daysPlayerAchievements(checkPlayerName_p1, checkPlayerName_p2)
 
                 #creating table to compare both player's combat level and quest progression using returnStatus
                 statusTable = t2a(
-                    header=["Combat level/quest progression", playerName1 + "'s score", playerName2 + "'s score"],
+                    header=["Combat level/quest progression", checkPlayerName_p1 + "'s score", checkPlayerName_p2 + "'s score"],
                     body=[['Combat level', returnStatus[0][1], returnStatus[1][1]],
                         ['Quests completed', returnStatus[0][2], returnStatus[1][2]],
                         ['Quests started', returnStatus[0][3], returnStatus[1][3]],
@@ -615,7 +631,7 @@ def run_discord_bot():
 
                 #creating table to compare both player's skills using returnHiscores
                 hiscoreTable = t2a(
-                    header=["skill", playerName1 + "'s rank", playerName2 + "'s rank", playerName1 + "'s level", playerName2 + "'s level", playerName1 + "'s experience", playerName2 + "'s experience", "Experience difference"],
+                    header=["skill", checkPlayerName_p1 + "'s rank", checkPlayerName_p2 + "'s rank", checkPlayerName_p1 + "'s level", checkPlayerName_p2 + "'s level", checkPlayerName_p1 + "'s experience", checkPlayerName_p2 + "'s experience", "Experience difference"],
                     body=[[returnHiscores[0][0], returnHiscores[0][1], returnHiscores[0][2], returnHiscores[0][3], returnHiscores[0][4], returnHiscores[0][5], returnHiscores[0][6], returnHiscores[0][7]],
                         [returnHiscores[1][0], returnHiscores[1][1], returnHiscores[1][2], returnHiscores[1][3], returnHiscores[1][4], returnHiscores[1][5], returnHiscores[1][6], returnHiscores[1][7]]],
                     style=PresetStyle.thin_compact
@@ -623,7 +639,7 @@ def run_discord_bot():
 
                 #creating table to compare both player's activities using returnActivities
                 activitiesTable = t2a(
-                    header=["Activity", playerName1 + "'s rank", playerName2 + "'s rank", playerName1 + "'s score", playerName2 + "'s score", "Score difference"],
+                    header=["Activity", checkPlayerName_p1 + "'s rank", checkPlayerName_p2 + "'s rank", checkPlayerName_p1 + "'s score", checkPlayerName_p2 + "'s score", "Score difference"],
                     body=[[returnActivities[0][0], returnActivities[0][1], returnActivities[0][2], returnActivities[0][3], returnActivities[0][4], returnActivities[0][5]],
                         [returnActivities[1][0], returnActivities[1][1], returnActivities[1][2], returnActivities[1][3], returnActivities[1][4], returnActivities[1][5]]],
                     style=PresetStyle.thin_compact
@@ -632,31 +648,31 @@ def run_discord_bot():
                 #creating table to compare number of achievements/event logs recorded in last 30 days using returnAchievements
                 achievementsTable = t2a(
                     header=["Player name", "Number of achievements in last 30 days"],
-                    body=[[playerName1, returnAchievements[0]],
-                        [playerName2, returnAchievements[1]]],
+                    body=[[checkPlayerName_p1, returnAchievements[0]],
+                        [checkPlayerName_p2, returnAchievements[1]]],
                     style=PresetStyle.thin_compact
                 )
 
-                await ctx.send(f"Overview for {playerName1} and {playerName2}.")
+                await ctx.send(f"Overview for {checkPlayerName_p1} and {checkPlayerName_p2}.")
                 await ctx.send(f"```\n{statusTable}\n```")
-                await ctx.send(f"Hiscore overview for {playerName1} and {playerName2}.")
+                await ctx.send(f"Hiscore overview for {checkPlayerName_p1} and {checkPlayerName_p2}.")
                 await ctx.send(f"```\n{hiscoreTable}\n```")
-                await ctx.send(f"Activities ranking for {playerName1} and {playerName2}.")
+                await ctx.send(f"Activities ranking for {checkPlayerName_p1} and {checkPlayerName_p2}.")
                 await ctx.send(f"```\n{activitiesTable}\n```")
-                await ctx.send(f"Number of achievements/events logged for {playerName1} and {playerName2}.")
+                await ctx.send(f"Number of achievements/events logged for {checkPlayerName_p1} and {checkPlayerName_p2}.")
                 await ctx.send(f"```\n{achievementsTable}\n```")
             
             #if data missing for P1, return below
             elif databaseCheckCount_p1 < 4 and databaseCheckCount_p2 == 4:
-                await ctx.send(f"Error: Data for {playerName1} is missing from database. Return Status for {playerName1}: {databaseCheck_p1}.")
+                await ctx.send(f"Error: Data for {checkPlayerName_p1} is missing from database. Return Status for {checkPlayerName_p1}: {databaseCheck_p1}.")
 
             #if data missing for P2, return below
             elif databaseCheckCount_p1 == 4 and databaseCheckCount_p2 < 4:
-                await ctx.send(f"Error: Data for {playerName2} is missing from database. Return Status for {playerName2}: {databaseCheck_p2}.")
+                await ctx.send(f"Error: Data for {checkPlayerName_p2} is missing from database. Return Status for {checkPlayerName_p2}: {databaseCheck_p2}.")
 
             #return below if data is missing for both P1 and P2
             else:
-                await ctx.send(f"Error: Data for both players ('{playerName1}' and '{playerName2}') is missing from database. Return Status for {playerName1}: {databaseCheck_p1}. Return Status for {playerName2}: {databaseCheck_p2}.")
+                await ctx.send(f"Error: Data for both players ('{checkPlayerName_p1}' and '{checkPlayerName_p2}') is missing from database. Return Status for {checkPlayerName_p1}: {databaseCheck_p1}. Return Status for {checkPlayerName_p2}: {databaseCheck_p2}.")
 
         else:
             await ctx.send("Error: Violation of input criteria. Only characters A-Z, a-z, and 0-9 are allowed.")
