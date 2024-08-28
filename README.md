@@ -29,10 +29,11 @@ This bot requires PostgreSQL to be set up on the host machine. Run createDatabas
 -  db_hostname --> include database hostname. Should by default be "localhost" if running locally.
 -  db_user --> include database user.
 -  db_method_db --> should be set to "postgresql".
--  db_method_conn --> should be set to "psycopg2".
+-  db_method_conn --> should be set to "psycopg2".\
 PLEASE ALSO MAKE SURE, IF ATTEMPTING TO RUN FROM A LINUX MACHINE, TO USE DOS2UNIX. FILE WILL OTHERWISE NOT EXECUTE AFTER USING CHMOD.
 
 RECENTLY ADDED
+[2024-08-28] Bugfix (KI001). Fixed issue where RuneScape usernames with spaces could not be accepted. Now if a name needs to be added/removed/searched for you can substitute a space with a '+'. The '+' is removed on the backend. This will ensure that two names can still be provided when two names are required for a command.
 
 [2024-08-27] Bugfix (KI002). Fixed an issue where main.py would throw an error if user data was not present in at least one of the required tables for currentHiscore and pCurrentCompare, but would be present in returnStatus. Bot will now also reply in the Discord chat correctly, with missing data indication.
 
@@ -51,7 +52,6 @@ RECENTLY ADDED
 [2024-08-09] Capture usernames that have no profile when requesting date from public APIs. These usernames are stored in main_runescape_flagged_usernames.
 
 KNOWN ISSUES
--  KI001: Currently the commands do not allow names with spaces in them to be handled, they will be interpreted as two separate inputs. A fix will be provided in the future.
 
 FUTURE IMPLEMENTATIONS
 -  Update removeTracking to also remove username from flagged_usernames, if present.
