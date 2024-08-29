@@ -45,7 +45,7 @@ def checkDateOrder(firstInsertedDate, secondInsertedDate):
 
 def checkInputString(insertedString):
 
-    char_list = ['@', '!', '[', ']', '{', '}', '(', ')', ',', '/', '?', '&', '$', '#', ';', ':', '*', '_']
+    char_list = ['@', '!', '[', ']', '{', '}', '(', ')', ',', '/', '?', '&', '$', '#', ';', ':', '*']
 
     result = any(i in insertedString for i in char_list)
 
