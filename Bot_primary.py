@@ -46,6 +46,59 @@ def run_discord_bot():
         if message.content == "Test input 2":
             await message.channel.send("Test response 2")
 
+
+    @bot.command()
+    async def checkTracked(ctx):
+
+        #!help information message
+        """Retrieves list of all RuneScape player names that are currently being tracked."""
+
+        #create objects for usage in terminal event logger, as well as commandAuthor for retrieving adminrights for discord user
+        addCheckTracked_timestamp = datetime.datetime.now()
+        commandAuthor = ctx.message.author
+
+        #print log of interaction in terminal
+        print(f"[{addCheckTracked_timestamp}] {commandAuthor} used 'checkTracked'.")
+
+        #retrieve admin rights for discord user
+        adminRights = admin.retrieveAdminRights(str(commandAuthor))
+
+        #only allowed to invoke command if user has general admin rights
+        if adminRights[0] == 1 and adminRights[2] == 1:
+
+            #obtain tracked users
+            trackedUsersResponse = admin.retrieveTrackedUsers()
+
+            #if trackedUsersResponse[0] == 1, return list of tracked users
+            if trackedUsersResponse[0] == 1:
+
+                await ctx.send(f"Players that are currently being tracked:\n\n")
+
+                table_string = trackedUsersResponse[1].to_string()
+                formatted_table = (f"```\n{table_string}\n```")
+
+                await ctx.send(formatted_table)
+
+            #if trackedUsersResponse[0] == 0, return that no users are currently being tracked
+            elif trackedUsersResponse[0] == 0:
+
+                await ctx.send(f"No players are currently being tracked.")
+
+            #if trackedUsersResponse[0] == 2, return that unexpected error occured when on creating DataFrame
+            elif trackedUsersResponse[0] == 2:
+
+                await ctx.send(f"Error: An unexpected error occured while trying to retrieve DataFrame.")
+
+            #else, return unexpected error.
+            else:
+
+                await ctx.send(f"Error: An unexpected error occured.")
+
+        #deny command if user does not meet admin rights requirements
+        else:
+
+            await ctx.send(f"Error: You do not have the right permission to use the checkTracked command.")
+
     #addTrackingFor command, using discord username and playerName as arguments
     @bot.command()
     async def addTracking(ctx, playerName):
