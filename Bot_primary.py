@@ -77,7 +77,7 @@ def run_discord_bot():
                 table_string = trackedUsersResponse[1].to_string()
                 formatted_table = (f"```\n{table_string}\n```")
 
-                await ctx.send(formatted_table)
+                await ctx.send(f"Players that are currently being tracked:\n\n{formatted_table}")
 
             #if trackedUsersResponse[0] == 0, return that no users are currently being tracked
             elif trackedUsersResponse[0] == 0:
@@ -438,17 +438,26 @@ def run_discord_bot():
             checkedFlaggedList = admin.checkFlagged()
 
             #if no players exist in flagged list, return below
-            if checkedFlaggedList[0][0] == 0:
-                await ctx.send("There are currently no players in flagged_usernames.")
+            if checkedFlaggedList[0] == 0:
+                await ctx.send("There are currently no flagged RuneScape player names.")
 
-            #if players exist in flagged list, return below:
+            elif checkedFlaggedList[0] == 1:
+
+                checkedFlagTableToString = checkedFlaggedList[1].to_string()
+                checkedFlagFormattedTable = (f"```\n{checkedFlagTableToString}\n```")
+
+                await ctx.send(f"The following RuneScape users are currently flagged:\n\n{checkedFlagFormattedTable}")
+
+            elif checkedFlaggedList[0] == 2:
+
+                await ctx.send(f"Error: An unexpected error occured while attempting to create DataFrame.")
+
             else:
-                numberOfUsersInFlaggedList = checkedFlaggedList[0][0]
-                usersInFlaggedList = checkedFlaggedList[1][:numberOfUsersInFlaggedList]
-                await ctx.send(f"There are currently {numberOfUsersInFlaggedList} names in flagged_usernames. Their usernames are: {usersInFlaggedList}.")
+
+                await ctx.send(f"Error: An unexpected error occured (1).")
 
         else:
-            await ctx.send("Error: An unexpected error occured.")
+            await ctx.send("Error: An unexpected error occured (0).")
 
     #check content of main_runescape_flagged_usernames
     @bot.command()
