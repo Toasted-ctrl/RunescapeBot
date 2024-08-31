@@ -34,6 +34,8 @@ This bot requires PostgreSQL to be set up on the host machine. Run createDatabas
 -  PLEASE ALSO MAKE SURE, IF ATTEMPTING TO RUN FROM A LINUX MACHINE, TO USE DOS2UNIX. FILE WILL OTHERWISE NOT EXECUTE AFTER USING CHMOD.
 
 RECENTLY ADDED\
+[2024-08-31] Implemented checkTracked command. Allows users with general admin rights to retrieve a list of currently tracked usernames.
+
 [2024-08-28] Bugfix (KI001). Fixed issue where RuneScape usernames with spaces could not be accepted. Now if a name needs to be added/removed/searched for you can substitute a space with a '+'. The '+' is removed on the backend. This will ensure that two names can still be provided when two names are required for a command.
 
 [2024-08-27] Bugfix (KI002). Fixed an issue where main.py would throw an error if user data was not present in at least one of the required tables for currentHiscore and pCurrentCompare, but would be present in returnStatus. Bot will now also reply in the Discord chat correctly, with missing data indication.
