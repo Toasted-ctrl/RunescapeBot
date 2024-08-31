@@ -366,24 +366,27 @@ def removeGlobalAdminFromAdminList(insertedDiscordName):
 #function to retrieve list of flagged users
 def checkFlagged():
 
-    #sql for retrieving dataframe
-    sql_checkFlagged = str(f"SELECT * FROM main_runescape_flagged_usernames ORDER BY player_name")
+    #sql for retrieving DataFrame
+    sql_checkFlagged = str(f"SELECT player_name, datesync_date FROM main_runescape_flagged_usernames ORDER BY player_name")
 
-    #create dataframe
+    #create DataFrame
     df_checkFlagged = pd.read_sql(sql=sql_checkFlagged, con=engine)
 
-    #if dataframe is empty, return 0
+    #if DataFrame is empty, return 0
     if df_checkFlagged.empty:
         
         return([0])
 
-    #if dataframe is not empty, return number of flagged users and list of flagged users
+    #if dataframe is not empty, return 1 and DataFrame
+    elif not df_checkFlagged.empty:
+
+        return(1, df_checkFlagged)
+    
+    #if unexpected error occured, return 2
     else:
 
-        numberOfFlaggedUsers = int(len(df_checkFlagged['count']))
-        flaggedUsers_list = df_checkFlagged['player_name'].tolist()
-
-        return([numberOfFlaggedUsers], flaggedUsers_list)
+        return([2])
+    
     
 #function to check if player exists in tracked list
 def checkPlayerExistInFlaggedList(insertedPlayerName):
