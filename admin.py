@@ -30,6 +30,27 @@ engine = create_engine(f"{db_method_db}+{db_method_conn}://{db_user}:{db_passwor
 conn = None
 cursor = None
 
+#creating list of users that are tracked, returning either 0 (DataFrame empty), 1 (DataFrame contains content, plus DataFrame), or 2 (unexpected error)
+def retrieveTrackedUsers():
+
+    #create string to retrieve dataframe
+    retrieveTrackedUsers_string = str(f"SELECT player_name FROM main_runescape_tracked_usernames ORDER BY player_name")
+
+    #create DataFrame with tracked players
+    retrieveTrackedUsers_df = pd.read_sql(sql=retrieveTrackedUsers_string, con=engine)
+
+    if retrieveTrackedUsers_df.empty:
+
+        return([0])
+
+    elif not retrieveTrackedUsers_df.empty:
+
+        return(1, retrieveTrackedUsers_df)
+    
+    else:
+
+        return([2])
+
 #creating function to retrieve admin rights for discord user
 def retrieveAdminRights(insertedDiscordUsername):
 
