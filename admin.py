@@ -34,7 +34,7 @@ cursor = None
 def retrieveTrackedUsers():
 
     #create string to retrieve dataframe
-    retrieveTrackedUsers_string = str(f"SELECT player_name FROM main_runescape_tracked_usernames ORDER BY player_name")
+    retrieveTrackedUsers_string = str(f'SELECT player_name AS "Player Name" FROM main_runescape_tracked_usernames ORDER BY "Player Name"')
 
     #create DataFrame with tracked players
     retrieveTrackedUsers_df = pd.read_sql(sql=retrieveTrackedUsers_string, con=engine)
@@ -367,7 +367,7 @@ def removeGlobalAdminFromAdminList(insertedDiscordName):
 def checkFlagged():
 
     #sql for retrieving DataFrame
-    sql_checkFlagged = str(f"SELECT player_name, datesync_date FROM main_runescape_flagged_usernames ORDER BY player_name")
+    sql_checkFlagged = str(f'SELECT player_name AS "Player Name", datesync_date AS "Flagged Date" FROM main_runescape_flagged_usernames ORDER BY "Player Name"')
 
     #create DataFrame
     df_checkFlagged = pd.read_sql(sql=sql_checkFlagged, con=engine)
