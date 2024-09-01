@@ -72,8 +72,6 @@ def run_discord_bot():
             #if trackedUsersResponse[0] == 1, return list of tracked users
             if trackedUsersResponse[0] == 1:
 
-                await ctx.send(f"Players that are currently being tracked:\n\n")
-
                 table_string = trackedUsersResponse[1].to_string()
                 formatted_table = (f"```\n{table_string}\n```")
 
@@ -560,7 +558,7 @@ def run_discord_bot():
     async def currentHiscore(ctx, playerName):
 
         #!help information message
-        """Answers with current status/hiscore of indicated player"""
+        """Answers with latest status/hiscore of indicated player"""
 
         #create objects for usage in terminal event logger
         currentHiscore_timestamp = datetime.datetime.now()
@@ -582,58 +580,32 @@ def run_discord_bot():
             #check if returnStatus[0][0] returns 1. If so, then return currentHiscore
             if databaseCheck[0] == 1 and databaseCheck[1] == 1 and databaseCheck[2] == 1 and databaseCheck[3] == 1:
                 
-                returnStatus = Lookup_PlayerCurrentStatus.playerCurrentStatus(checkPlayerName)
-                returnHiscores = Lookup_PlayerCurrentStatus.playerCurrentHiscores(checkPlayerName)
-                returnActivities = Lookup_PlayerCurrentStatus.playerCurrentActivities(checkPlayerName)
-                returnAchievements = Lookup_PlayerCurrentStatus.playerLastAchievements(checkPlayerName)
-
                 #creating table with current combat and quest stats using returnStatus
-                statusTable = t2a(
-                    header=["Combat level/Quest progression", "Score"],
-                    body=[['Combat level', returnStatus[1]], 
-                        ['Quests completed', returnStatus[2]], 
-                        ['Quests started', returnStatus[3]], 
-                        ['Quests not started', returnStatus[4]]],
-                    style=PresetStyle.thin_compact
-                )
+                returnStatus = Lookup_PlayerCurrentStatus.playerCurrentStatus(checkPlayerName)
+                status_string = returnStatus[1].to_string()
+                status_final_table = (f"```\n{status_string}\n```")
 
                 #creating table with current hiscores using returnHiscores
-                hiscoreTable = t2a(
-                    header=["Skill", "Rank", "Level", "Experience"],
-                    body=[[returnHiscores[0], returnHiscores[1], returnHiscores[2], returnHiscores[3]], 
-                        [returnHiscores[4], returnHiscores[5], returnHiscores[6], returnHiscores[7]]],
-                    style=PresetStyle.thin_compact
-                )
+                returnHiscores = Lookup_PlayerCurrentStatus.playerCurrentHiscores(checkPlayerName)
+                hiscore_string = returnHiscores[1].to_string()
+                hiscore_final_table = (f"```\n{hiscore_string}\n```")
 
                 #creating table with current activities using returnActivities
-                activitiesTable = t2a(
-                    header=["Activity", "Rank", "Score"],
-                    body=[[returnActivities[0], returnActivities[1], returnActivities[2]],
-                        [returnActivities[3], returnActivities[4], returnActivities[5]], 
-                        [returnActivities[6], returnActivities[7], returnActivities[8]]],
-                    style=PresetStyle.thin_compact
-                )
+                returnActivities = Lookup_PlayerCurrentStatus.playerCurrentActivities(checkPlayerName)
+                activites_string = returnActivities[1].to_string()
+                activities_final_table = (f"```\n{activites_string}\n```")
 
                 #creating table with last achievements/event logs using returnAchievements
-                lastAchievementsTable = t2a(
-                    header=["Event date", "Event"],
-                    body=[[returnAchievements[0], returnAchievements[1]], 
-                        [returnAchievements[2], returnAchievements[3]], 
-                        [returnAchievements[4], returnAchievements[5]], 
-                        [returnAchievements[6], returnAchievements[7]], 
-                        [returnAchievements[8], returnAchievements[9]]],
-                    style=PresetStyle.thin_compact
-                )
+                returnAchievements = Lookup_PlayerCurrentStatus.playerLastAchievements(checkPlayerName)
+                achievements_string = returnAchievements[1].to_string()
+                achievements_final_table = (f"```\n{achievements_string}\n```")
 
                 #return tables to discord channel
-                await ctx.send(f'Overview for {checkPlayerName}.')
-                await ctx.send(f"```\n{statusTable}\n```")
-                await ctx.send('Last Hiscore readings.')
-                await ctx.send(f"```\n{hiscoreTable}\n```")
-                await ctx.send('Last activity readings.')
-                await ctx.send(f"```\n{activitiesTable}\n```")
-                await ctx.send('Recent event logs/achievements.')
-                await ctx.send(f"```\n{lastAchievementsTable}\n```")
+                await ctx.send(f"Overview for '{checkPlayerName}'.")
+                await ctx.send(f"Last Status reading:\n{status_final_table}")
+                await ctx.send(f"Last Hiscore readings:\n{hiscore_final_table}")
+                await ctx.send(f"Last Activity readings:\n{activities_final_table}")
+                await ctx.send(f"Last five Achievement readings:\n{achievements_final_table}")
 
             #if returnStatus[0][0] does not return one, return below
             else:
@@ -641,7 +613,7 @@ def run_discord_bot():
                 await ctx.send(f"Data for {checkPlayerName} is missing from database. Return Status: {databaseCheck}.")
 
         else:
-            await ctx.send("Error: Violation of input criteria. Only characters A-Z, a-z, and 0-9 are allowed.")
+            await ctx.send("Error: Violation of input criteria. Only characters Aa-Zz, 0-9, and symbols '-, _, +' are allowed.")
 
     @bot.command()
     async def pCurrentCompare(ctx, playerName1, playerName2):
@@ -675,54 +647,31 @@ def run_discord_bot():
             #checks if Status dataframe contains data. If it does contain data, return pCurrentCompare
             if databaseCheckCount_p1 == 4 and databaseCheckCount_p2 == 4:
 
-                #requesting other tables from DONE_Lookup_PlayerCurrentCompare
-                returnStatus = Lookup_PlayerCurrentCompare.compareCurrentPlayerStatus(checkPlayerName_p1, checkPlayerName_p2)
-                returnHiscores = Lookup_PlayerCurrentCompare.compareCurrentPlayerSkills(checkPlayerName_p1, checkPlayerName_p2)
-                returnActivities = Lookup_PlayerCurrentCompare.compareCurrentPlayerActivities(checkPlayerName_p1, checkPlayerName_p2)
-                returnAchievements = Lookup_PlayerCurrentCompare.compareLast30daysPlayerAchievements(checkPlayerName_p1, checkPlayerName_p2)
-
                 #creating table to compare both player's combat level and quest progression using returnStatus
-                statusTable = t2a(
-                    header=["Combat level/quest progression", checkPlayerName_p1 + "'s score", checkPlayerName_p2 + "'s score"],
-                    body=[['Combat level', returnStatus[0][1], returnStatus[1][1]],
-                        ['Quests completed', returnStatus[0][2], returnStatus[1][2]],
-                        ['Quests started', returnStatus[0][3], returnStatus[1][3]],
-                        ['Quests not started', returnStatus[0][4], returnStatus[1][4]]],
-                    style=PresetStyle.thin_compact
-                )
+                returnStatus = Lookup_PlayerCurrentCompare.compareCurrentPlayerStatus(checkPlayerName_p1, checkPlayerName_p2)
+                status_string = returnStatus[1].to_string()
+                status_final_table = (f"```\n{status_string}\n```")
 
                 #creating table to compare both player's skills using returnHiscores
-                hiscoreTable = t2a(
-                    header=["skill", checkPlayerName_p1 + "'s rank", checkPlayerName_p2 + "'s rank", checkPlayerName_p1 + "'s level", checkPlayerName_p2 + "'s level", checkPlayerName_p1 + "'s experience", checkPlayerName_p2 + "'s experience", "Experience difference"],
-                    body=[[returnHiscores[0][0], returnHiscores[0][1], returnHiscores[0][2], returnHiscores[0][3], returnHiscores[0][4], returnHiscores[0][5], returnHiscores[0][6], returnHiscores[0][7]],
-                        [returnHiscores[1][0], returnHiscores[1][1], returnHiscores[1][2], returnHiscores[1][3], returnHiscores[1][4], returnHiscores[1][5], returnHiscores[1][6], returnHiscores[1][7]]],
-                    style=PresetStyle.thin_compact
-                )
+                returnHiscores = Lookup_PlayerCurrentCompare.compareCurrentPlayerSkills(checkPlayerName_p1, checkPlayerName_p2)
+                hiscores_string = returnHiscores[1].to_string()
+                hiscores_final_table = (f"```\n{hiscores_string}\n```")
 
                 #creating table to compare both player's activities using returnActivities
-                activitiesTable = t2a(
-                    header=["Activity", checkPlayerName_p1 + "'s rank", checkPlayerName_p2 + "'s rank", checkPlayerName_p1 + "'s score", checkPlayerName_p2 + "'s score", "Score difference"],
-                    body=[[returnActivities[0][0], returnActivities[0][1], returnActivities[0][2], returnActivities[0][3], returnActivities[0][4], returnActivities[0][5]],
-                        [returnActivities[1][0], returnActivities[1][1], returnActivities[1][2], returnActivities[1][3], returnActivities[1][4], returnActivities[1][5]]],
-                    style=PresetStyle.thin_compact
-                )
-
+                returnActivities = Lookup_PlayerCurrentCompare.compareCurrentPlayerActivities(checkPlayerName_p1, checkPlayerName_p2)
+                activities_string = returnActivities[1].to_string()
+                activities_final_table = (f"```\n{activities_string}\n```")
+                
                 #creating table to compare number of achievements/event logs recorded in last 30 days using returnAchievements
-                achievementsTable = t2a(
-                    header=["Player name", "Number of achievements in last 30 days"],
-                    body=[[checkPlayerName_p1, returnAchievements[0]],
-                        [checkPlayerName_p2, returnAchievements[1]]],
-                    style=PresetStyle.thin_compact
-                )
+                returnAchievements = Lookup_PlayerCurrentCompare.compareLast30daysPlayerAchievements(checkPlayerName_p1, checkPlayerName_p2)
+                achievements_string = returnAchievements[1].to_string()
+                achievements_final_table = (f"```\n{achievements_string}\n```")
 
-                await ctx.send(f"Overview for {checkPlayerName_p1} and {checkPlayerName_p2}.")
-                await ctx.send(f"```\n{statusTable}\n```")
-                await ctx.send(f"Hiscore overview for {checkPlayerName_p1} and {checkPlayerName_p2}.")
-                await ctx.send(f"```\n{hiscoreTable}\n```")
-                await ctx.send(f"Activities ranking for {checkPlayerName_p1} and {checkPlayerName_p2}.")
-                await ctx.send(f"```\n{activitiesTable}\n```")
-                await ctx.send(f"Number of achievements/events logged for {checkPlayerName_p1} and {checkPlayerName_p2}.")
-                await ctx.send(f"```\n{achievementsTable}\n```")
+                await ctx.send(f"Overview for '{checkPlayerName_p1}' and '{checkPlayerName_p2}'.")
+                await ctx.send(f"Latest Status readings:\n{status_final_table}")
+                await ctx.send(f"Latest Hiscore readings:\n{hiscores_final_table}")
+                await ctx.send(f"Latest Activity readings:\n{activities_final_table}")
+                await ctx.send(f"Latest Achievement readings:\n{achievements_final_table}")
             
             #if data missing for P1, return below
             elif databaseCheckCount_p1 < 4 and databaseCheckCount_p2 == 4:
