@@ -26,141 +26,147 @@ engine = create_engine(f"{db_method_db}+{db_method_conn}://{db_user}:{db_passwor
 def compareCurrentPlayerStatus(insertedPlayerNameP1, insertedPlayerNameP2):
 
     #p1 sql query
-    sql_compareCurrentPlayerStatus_p1 = str(f"SELECT * FROM main_runescape_status WHERE player_name = '{insertedPlayerNameP1}' AND datesync_date = '{currentDate}'")
+    sql_compareCurrentPlayerStatus_p1 = str(f"SELECT combat_level, quests_completed, quests_started, quests_not_started FROM main_runescape_status WHERE player_name = '{insertedPlayerNameP1}' AND datesync_date = '{currentDate}'")
 
-    #p1 create dataframe
-    df_CompareCurrentStatus_p1 = pd.read_sql(sql=sql_compareCurrentPlayerStatus_p1, con=engine)
-
-    #p1 check if dataframe contains data
-    if df_CompareCurrentStatus_p1.empty:
-        df_CompareCurrentStatus_p1_checkContent = 0
-    else:
-        df_CompareCurrentStatus_p1_checkContent = 1
+    #create DataFrame P1
+    df_compareCurrentStatus_p1 = pd.read_sql(sql=sql_compareCurrentPlayerStatus_p1, con=engine)
     
     #p2 sql query
-    sql_compareCurrentPlayerStatus_p2 = str(f"SELECT * FROM main_runescape_status WHERE player_name = '{insertedPlayerNameP2}' AND datesync_date = '{currentDate}'")
+    sql_compareCurrentPlayerStatus_p2 = str(f"SELECT combat_level, quests_completed, quests_started, quests_not_started FROM main_runescape_status WHERE player_name = '{insertedPlayerNameP2}' AND datesync_date = '{currentDate}'")
 
-    #p2 create dataframe
-    df_CompareCurrentStatus_p2 = pd.read_sql(sql=sql_compareCurrentPlayerStatus_p2, con=engine)
+    #create DataFrame P2
+    df_compareCurrentStatus_p2 = pd.read_sql(sql=sql_compareCurrentPlayerStatus_p2, con=engine)
 
-    #p2 check if dataframe contains data
-    if df_CompareCurrentStatus_p2.empty:
-        df_CompareCurrentStatus_p2_checkContent = 0
+    #if either DataFrame is empty, return 0
+    if df_compareCurrentStatus_p1.empty or df_compareCurrentStatus_p2.empty:
+
+        return([0])
+    
+    #if both DataFrames not empty, return 1 and final DataFrame
+    elif not df_compareCurrentStatus_p1.empty and not df_compareCurrentStatus_p2.empty:
+
+        #p1 objects:
+        combat_level_p1 = df_compareCurrentStatus_p1.iloc[0]['combat_level']
+        quests_completed_p1 = df_compareCurrentStatus_p1.iloc[0]['quests_completed']
+        quests_started_p1 = df_compareCurrentStatus_p1.iloc[0]['quests_started']
+        quests_not_started_p1 = df_compareCurrentStatus_p1.iloc[0]['quests_not_started']
+
+        #p2 objects:
+        combat_level_p2 = df_compareCurrentStatus_p2.iloc[0]['combat_level']
+        quests_completed_p2 = df_compareCurrentStatus_p2.iloc[0]['quests_completed']
+        quests_started_p2 = df_compareCurrentStatus_p2.iloc[0]['quests_started']
+        quests_not_started_p2 = df_compareCurrentStatus_p2.iloc[0]['quests_not_started']
+
+        
+        #create data for interim DataFrame
+        df_data = [['Combat/level', combat_level_p1, combat_level_p2],
+                   ['Quests completed', quests_completed_p1, quests_completed_p2],
+                   ['Quests started', quests_started_p1, quests_started_p2],
+                   ['Quests not started', quests_not_started_p1, quests_not_started_p2]]
+        
+        #create interim DataFrame
+        df_compareCurrentStatus_interim = pd.DataFrame(df_data, columns=['Combat/Quests', insertedPlayerNameP1, insertedPlayerNameP2])
+
+        #determine which player has higher, equal or lower level/score
+        df_compareCurrentStatus_interim.loc[df_compareCurrentStatus_interim[insertedPlayerNameP1] < df_compareCurrentStatus_interim[insertedPlayerNameP2], 'Q'] = '<'
+        df_compareCurrentStatus_interim.loc[df_compareCurrentStatus_interim[insertedPlayerNameP1] > df_compareCurrentStatus_interim[insertedPlayerNameP2], 'Q'] = '>'
+        df_compareCurrentStatus_interim.loc[df_compareCurrentStatus_interim[insertedPlayerNameP1] == df_compareCurrentStatus_interim[insertedPlayerNameP2], 'Q'] = '='
+
+        #create final dataframe
+        df_compareCurrentStatus_Final = df_compareCurrentStatus_interim[['Combat/Quests', insertedPlayerNameP1, 'Q', insertedPlayerNameP2]]
+
+        return([1], df_compareCurrentStatus_Final)
+    
+    #if unexpected error, return 2
     else:
-        df_CompareCurrentStatus_p2_checkContent = 1
 
-    #return following if both dataframes (p1 and p2) contain data
-    if df_CompareCurrentStatus_p1_checkContent == 1 and df_CompareCurrentStatus_p2_checkContent == 1:
-
-        #creating objects for p1 and p2 data to include in return
-        combatLevel_p1 = str(df_CompareCurrentStatus_p1.iloc[0]['combat_level'])
-        combatLevel_p2 = str(df_CompareCurrentStatus_p2.iloc[0]['combat_level'])
-
-        questsCompleted_p1 = str(df_CompareCurrentStatus_p1.iloc[0]['quests_completed'])
-        questsCompleted_p2 = str(df_CompareCurrentStatus_p2.iloc[0]['quests_completed'])
-
-        questsStarted_p1 = str(df_CompareCurrentStatus_p1.iloc[0]['quests_started'])
-        questsStarted_p2 = str(df_CompareCurrentStatus_p2.iloc[0]['quests_started'])
-
-        questsNotStarted_p1 = str(df_CompareCurrentStatus_p1.iloc[0]['quests_not_started'])
-        questsNotStarted_p2 = str(df_CompareCurrentStatus_p2.iloc[0]['quests_not_started'])
-
-        return ([df_CompareCurrentStatus_p1_checkContent, combatLevel_p1, questsCompleted_p1, questsStarted_p1, questsNotStarted_p1], 
-                [df_CompareCurrentStatus_p2_checkContent, combatLevel_p2, questsCompleted_p2, questsStarted_p2, questsNotStarted_p2])
-
-    else:
-        return ([df_CompareCurrentStatus_p1_checkContent], 
-                [df_CompareCurrentStatus_p2_checkContent])
+        return([2])
 
 #create function to compare player levels
 def compareCurrentPlayerSkills(insertedPlayerNameP1, insertedPlayerNameP2):
 
     #p1 sql query
-    sql_compareCurrentPlayerSkills_p1 = str(f"SELECT * FROM main_runescape_hiscores WHERE player_name = '{insertedPlayerNameP1}' AND datesync_date = '{currentDate}'")
+    sql_compareCurrentPlayerSkills_p1 = str(f"""SELECT skill AS "Skill", level, experience FROM main_runescape_hiscores WHERE player_name = '{insertedPlayerNameP1}' AND datesync_date = '{currentDate}'""")
 
-    #p1 create dataframe
+    #p1 create DataFrame
     df_CompareCurrentPlayerSkills_p1 = pd.read_sql(sql=sql_compareCurrentPlayerSkills_p1, con=engine)
 
     #p2 sql query
-    sql_compareCurrentPlayerSkills_p2 = str(f"SELECT * FROM main_runescape_hiscores WHERE player_name = '{insertedPlayerNameP2}' AND datesync_date = '{currentDate}'")
+    sql_compareCurrentPlayerSkills_p2 = str(f"""SELECT skill AS "Skill", level, experience FROM main_runescape_hiscores WHERE player_name = '{insertedPlayerNameP2}' AND datesync_date = '{currentDate}'""")
 
-    #p2 create dataframe
+    #p2 create DataFrame
     df_CompareCurrentPlayerSkills_p2 = pd.read_sql(sql=sql_compareCurrentPlayerSkills_p2, con=engine)
 
-    #Merge tables on skill
-    df_currentSkillMerged = pd.merge(df_CompareCurrentPlayerSkills_p1, df_CompareCurrentPlayerSkills_p2, on = 'skill', how='inner')
+    #if either DataFrame is empty, return 0
+    if df_CompareCurrentPlayerSkills_p1.empty or df_CompareCurrentPlayerSkills_p2.empty:
 
-    #calculate experience_diff between players
-    df_currentSkillMerged['experience_diff'] = df_currentSkillMerged['experience_x'] - df_currentSkillMerged['experience_y']
+        return([0])
 
-    #calculate level_diff between players
-    df_currentSkillMerged['level_diff'] = df_currentSkillMerged['level_x'] - df_currentSkillMerged['level_y']
+    elif not df_CompareCurrentPlayerSkills_p1.empty and not df_CompareCurrentPlayerSkills_p2.empty:
 
-    #calculate rank_diff between players
-    df_currentSkillMerged['rank_diff'] = df_currentSkillMerged['rank_x'] - df_currentSkillMerged['rank_y']
+        #merge dataframes
+        df_CompareCurrentPlayerSkills_Merged = pd.merge(df_CompareCurrentPlayerSkills_p1, df_CompareCurrentPlayerSkills_p2, on='Skill', how='inner')
 
-    #creating objects to insert into return statement
-    entry_00_skill = str(df_currentSkillMerged.iloc[0]['skill'])
-    entry_00_rank_P1 = str(df_currentSkillMerged.iloc[0]['rank_x'])
-    entry_00_rank_P2 = str(df_currentSkillMerged.iloc[0]['rank_y'])
-    entry_00_level_P1 = str(df_currentSkillMerged.iloc[0]['level_x'])
-    entry_00_level_P2 = str(df_currentSkillMerged.iloc[0]['level_y'])
-    entry_00_experience_P1 = str(df_currentSkillMerged.iloc[0]['experience_x'])
-    entry_00_experience_P2 = str(df_currentSkillMerged.iloc[0]['experience_y'])
-    entry_00_experience_diff = str(df_currentSkillMerged.iloc[0]['experience_diff'])
+        #determine which player has higher, equal or lower level/score
+        df_CompareCurrentPlayerSkills_Merged.loc[df_CompareCurrentPlayerSkills_Merged['experience_x'] < df_CompareCurrentPlayerSkills_Merged['experience_y'], 'Q'] = '<'
+        df_CompareCurrentPlayerSkills_Merged.loc[df_CompareCurrentPlayerSkills_Merged['experience_x'] > df_CompareCurrentPlayerSkills_Merged['experience_y'], 'Q'] = '>'
+        df_CompareCurrentPlayerSkills_Merged.loc[df_CompareCurrentPlayerSkills_Merged['experience_x'] == df_CompareCurrentPlayerSkills_Merged['experience_y'], 'Q'] = '='
 
-    entry_01_skill = str(df_currentSkillMerged.iloc[1]['skill'])
-    entry_01_rank_P1 = str(df_currentSkillMerged.iloc[1]['rank_x'])
-    entry_01_rank_P2 = str(df_currentSkillMerged.iloc[1]['rank_y'])
-    entry_01_level_P1 = str(df_currentSkillMerged.iloc[1]['level_x'])
-    entry_01_level_P2 = str(df_currentSkillMerged.iloc[1]['level_y'])
-    entry_01_experience_P1 = str(df_currentSkillMerged.iloc[1]['experience_x'])
-    entry_01_experience_P2 = str(df_currentSkillMerged.iloc[1]['experience_y'])
-    entry_01_experience_diff = str(df_currentSkillMerged.iloc[1]['experience_diff'])
+        #create combined values for skill + experience for p1
+        df_CompareCurrentPlayerSkills_Merged[insertedPlayerNameP1] = df_CompareCurrentPlayerSkills_Merged['level_x'].astype(str) + " (" + df_CompareCurrentPlayerSkills_Merged['experience_x'].astype(str) + ")"
 
-    return ([entry_00_skill, entry_00_rank_P1, entry_00_rank_P2, entry_00_level_P1, entry_00_level_P2, entry_00_experience_P1, entry_00_experience_P2, entry_00_experience_diff],
-            [entry_01_skill, entry_01_rank_P1, entry_01_rank_P2, entry_01_level_P1, entry_01_level_P2, entry_01_experience_P1, entry_01_experience_P2, entry_01_experience_diff])
+        #create combined values for skill + experience for p2
+        df_CompareCurrentPlayerSkills_Merged[insertedPlayerNameP2] = df_CompareCurrentPlayerSkills_Merged['level_y'].astype(str) + " (" + df_CompareCurrentPlayerSkills_Merged['experience_y'].astype(str) + ")"
+
+        #create final DataFrame
+        df_CompareCurrentPlayerSkills_Final = df_CompareCurrentPlayerSkills_Merged[['Skill', insertedPlayerNameP1, 'Q', insertedPlayerNameP2]]
+
+        return(1, df_CompareCurrentPlayerSkills_Final)
+
+    #if unexpected error occured, return 2
+    else:
+
+        return([2])
 
 #create function to compare player activites
 def compareCurrentPlayerActivities(insertedPlayerNameP1, insertedPlayerNameP2):
 
     #p1 sql query
-    sql_compareCurrentPlayerActivities_p1 = str(f"SELECT * FROM main_runescape_achievements WHERE player_name = '{insertedPlayerNameP1}' AND datesync_date = '{currentDate}'")
+    sql_compareCurrentPlayerActivities_p1 = str(f"""SELECT activity AS "Activity", score FROM main_runescape_achievements WHERE player_name = '{insertedPlayerNameP1}' AND datesync_date = '{currentDate}'""")
 
-    #p1 dataframe
+    #p1 DataFrame
     df_compareCurrentPlayerActivities_p1 = pd.read_sql(sql=sql_compareCurrentPlayerActivities_p1, con=engine)
 
     #p2 sql query
-    sql_compareCurrentPlayerActivities_p2 = str(f"SELECT * FROM main_runescape_achievements WHERE player_name = '{insertedPlayerNameP2}' AND datesync_date = '{currentDate}'")
+    sql_compareCurrentPlayerActivities_p2 = str(f"""SELECT activity AS "Activity", score FROM main_runescape_achievements WHERE player_name = '{insertedPlayerNameP2}' AND datesync_date = '{currentDate}'""")
 
-    #p2 dataframe
+    #p2 dDataFrame
     df_compareCurrentPlayerActivities_p2 = pd.read_sql(sql=sql_compareCurrentPlayerActivities_p2, con=engine)
 
-    #merge tables on activity
-    df_currentActivitiesMerged = pd.merge(df_compareCurrentPlayerActivities_p1, df_compareCurrentPlayerActivities_p2, on='activity', how='inner')
+    #if either DataFrame empty, return 0
+    if df_compareCurrentPlayerActivities_p1.empty or df_compareCurrentPlayerActivities_p2.empty:
+        
+        return([0])
 
-    #calculate rank_diff between players
-    df_currentActivitiesMerged['rank_diff'] = df_currentActivitiesMerged['rank_x'] - df_currentActivitiesMerged['rank_y']
+    #if both DataFrames not empty, return 1 and DataFrame
+    elif not df_compareCurrentPlayerActivities_p1.empty and not df_compareCurrentPlayerActivities_p2.empty:
 
-    #calculate score_diff between players
-    df_currentActivitiesMerged['score_diff'] = df_currentActivitiesMerged['score_x'] - df_currentActivitiesMerged['score_y']
+        #merge DataFrames
+        df_compareCurrentPlayerActivities_merged = pd.merge(df_compareCurrentPlayerActivities_p1, df_compareCurrentPlayerActivities_p2, on='Activity', how='inner')
 
-    entry_00_activity = str(df_currentActivitiesMerged.iloc[0]['activity'])
-    entry_00_rank_P1 = str(df_currentActivitiesMerged.iloc[0]['rank_x'])
-    entry_00_rank_P2 = str(df_currentActivitiesMerged.iloc[0]['rank_y'])
-    entry_00_score_P1 = str(df_currentActivitiesMerged.iloc[0]['score_x'])
-    entry_00_score_P2 = str(df_currentActivitiesMerged.iloc[0]['score_y'])
-    entry_00_score_diff = str(df_currentActivitiesMerged.iloc[0]['score_diff'])
+        #determine which player has higher, equal or lower level/score
+        df_compareCurrentPlayerActivities_merged.loc[df_compareCurrentPlayerActivities_merged['score_x'] < df_compareCurrentPlayerActivities_merged['score_y'], 'Q'] = '<'
+        df_compareCurrentPlayerActivities_merged.loc[df_compareCurrentPlayerActivities_merged['score_x'] > df_compareCurrentPlayerActivities_merged['score_y'], 'Q'] = '>'
+        df_compareCurrentPlayerActivities_merged.loc[df_compareCurrentPlayerActivities_merged['score_x'] == df_compareCurrentPlayerActivities_merged['score_y'], 'Q'] = '='
 
-    entry_01_activity = str(df_currentActivitiesMerged.iloc[1]['activity'])
-    entry_01_rank_P1 = str(df_currentActivitiesMerged.iloc[1]['rank_x'])
-    entry_01_rank_P2 = str(df_currentActivitiesMerged.iloc[1]['rank_y'])
-    entry_01_score_P1 = str(df_currentActivitiesMerged.iloc[1]['score_x'])
-    entry_01_score_P2 = str(df_currentActivitiesMerged.iloc[1]['score_y'])
-    entry_01_score_diff = str(df_currentActivitiesMerged.iloc[1]['score_diff'])
+        df_compareCurrentPlayerActivities_Final = df_compareCurrentPlayerActivities_merged[['Activity', 'score_x', 'Q', 'score_y']]
 
-    return([entry_00_activity, entry_00_rank_P1, entry_00_rank_P2, entry_00_score_P1, entry_00_score_P2, entry_00_score_diff], 
-           [entry_01_activity, entry_01_rank_P1, entry_01_rank_P2, entry_01_score_P1, entry_01_score_P2, entry_01_score_diff])
+        return(1, df_compareCurrentPlayerActivities_Final)
+
+    #if unexpected error, return 2
+    else:
+
+        return([2])
 
 #create function to compare player achievements
 def compareLast30daysPlayerAchievements(insertedPlayerNameP1, insertedPlayerNameP2):
@@ -174,16 +180,36 @@ def compareLast30daysPlayerAchievements(insertedPlayerNameP1, insertedPlayerName
     #p1 dataframe
     df_compareLast30daysPlayerAchievements_p1 = pd.read_sql(sql=sql_compareLast30daysPlayerAchievements_p1, con=engine)
 
-    #p1 count achievements
-    achievements_p1 = str(len(df_compareLast30daysPlayerAchievements_p1))
-
     #p2 sql query
     sql_compareLast30daysPlayerAchievements_p2 = str(f"SELECT * FROM main_runescape_activities_processed WHERE player_name = '{insertedPlayerNameP2}' AND event_date_numeric >= '{datePrior}' AND event_date_numeric <= '{currentDate}'")
 
     #p2 dataframe
     df_compareLast30daysPlayerAchievements_p2 = pd.read_sql(sql=sql_compareLast30daysPlayerAchievements_p2, con=engine)
 
-    #p2 count achievements
-    achievements_p2 = str(len(df_compareLast30daysPlayerAchievements_p2))
+    #if either DataFrame empty, return 0
+    if df_compareLast30daysPlayerAchievements_p1.empty or df_compareLast30daysPlayerAchievements_p2.empty:
 
-    return (achievements_p1, achievements_p2)
+        return([0])
+    
+    #if both DataFrames have content, return 1 and final DataFrame
+    elif not df_compareLast30daysPlayerAchievements_p1.empty and not df_compareLast30daysPlayerAchievements_p2.empty:
+
+        #p1 count achievements
+        achievements_p1 = str(len(df_compareLast30daysPlayerAchievements_p1))
+
+        #p2 count achievements
+        achievements_p2 = str(len(df_compareLast30daysPlayerAchievements_p2))
+
+        #creating data for final DataFrame
+        df_data = [[insertedPlayerNameP1, achievements_p1],
+                   [insertedPlayerNameP2, achievements_p2]]
+        
+        #final DataFrame
+        df_compareAchievements_Final = pd.DataFrame(df_data, columns=['Player Name', 'Number of Achievements in last 30 days'])
+
+        return(1, df_compareAchievements_Final)
+
+    #if unexpected error, return 2
+    else:
+
+        return([2])

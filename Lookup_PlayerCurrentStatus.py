@@ -23,113 +23,104 @@ currentDate = str(datetime.date.today())
 #create function to retrieve player current hiscore stats
 def playerCurrentHiscores(insertedPlayerName):
 
-    #sql for dataframe creation
-    sql_playerCurrentHiscores = str(f"SELECT * FROM main_runescape_hiscores WHERE player_name = '{insertedPlayerName}' AND datesync_date = '{currentDate}'")
+    #sql for DataFrame creation
+    sql_playerCurrentHiscores = str(f"""SELECT skill AS "Skill", level AS "Level", experience AS "Experience" FROM main_runescape_hiscores WHERE player_name = '{insertedPlayerName}' AND datesync_date = '{currentDate}'""")
 
-    #create dataframe
+    #create DataFrame
     df_playerCurrentHiscores = pd.read_sql(sql=sql_playerCurrentHiscores, con=engine)
 
-    #objects to include in return
-    skill_0 = df_playerCurrentHiscores.iloc[0]['skill']
-    rank_0 = df_playerCurrentHiscores.iloc[0]['rank']
-    level_0 = df_playerCurrentHiscores.iloc[0]['level']
-    experience_0 = df_playerCurrentHiscores.iloc[0]['experience']
+    #if DataFrame empty, return 0
+    if df_playerCurrentHiscores.empty:
 
-    skill_1 = df_playerCurrentHiscores.iloc[1]['skill']
-    rank_1 = df_playerCurrentHiscores.iloc[1]['rank']
-    level_1 = df_playerCurrentHiscores.iloc[1]['level']
-    experience_1 = df_playerCurrentHiscores.iloc[1]['experience']
+        return([0])
+    
+    #if DataFrame not empty, return 1 and DataFrame
+    elif not df_playerCurrentHiscores.empty:
 
-    #return values for when function is called from other program
-    return(skill_0, rank_0, level_0, experience_0,
-           skill_1, rank_1, level_1, experience_1)
+        return(1, df_playerCurrentHiscores)
+    
+    #if unexpected error occured, return 2
+    else:
+
+        return([2])
 
 #create function to retrieve player current activities stats
 def playerCurrentActivities(insertedPlayerName):
 
-    #sql for dataframe creation
-    sql_playerCurrentActivities = str(f"SELECT * FROM main_runescape_achievements WHERE player_name = '{insertedPlayerName}' AND datesync_date = '{currentDate}'")
+    #sql for DataFrame creation
+    sql_playerCurrentActivities = str(f"""SELECT activity AS "Activity", rank AS "Rank", score AS "Score" FROM main_runescape_achievements WHERE player_name = '{insertedPlayerName}' AND datesync_date = '{currentDate}'""")
 
-    #create dataframe
+    #create DataFrame
     df_playerCurrentActivities = pd.read_sql(sql=sql_playerCurrentActivities, con=engine)
 
-    #objects to include in return
-    activity_0 = df_playerCurrentActivities.iloc[0]['activity']
-    rank_0 = df_playerCurrentActivities.iloc[0]['rank']
-    score_0 = df_playerCurrentActivities.iloc[0]['score']
-    activity_1 = df_playerCurrentActivities.iloc[1]['activity']
-    rank_1 = df_playerCurrentActivities.iloc[1]['rank']
-    score_1 = df_playerCurrentActivities.iloc[1]['score']
-    activity_2 = df_playerCurrentActivities.iloc[2]['activity']
-    rank_2 = df_playerCurrentActivities.iloc[2]['rank']
-    score_2 = df_playerCurrentActivities.iloc[2]['score']
+    #if DataFrame empty, return 0
+    if df_playerCurrentActivities.empty:
 
-    #return values for when function is called from other program
-    return (activity_0, rank_0, score_0, 
-            activity_1, rank_1, score_1, 
-            activity_2, rank_2, score_2)
+        return([0])
+
+    #if DataFrame not empty, return 1 and DataFrame
+    elif not df_playerCurrentActivities.empty:
+
+        return(1, df_playerCurrentActivities)
+    
+    #if unexpected error, return 2
+    else:
+
+        return([2])
 
 #create function to retrieve player current combat stats and quest progression
 def playerCurrentStatus(insertedPlayerName):
     
-    #sql query
-    sql_playerCurrentStatus = str(f"SELECT * FROM main_runescape_status WHERE player_name = '{insertedPlayerName}' AND datesync_date = '{currentDate}'")
+    #sql query for DataFrame creation
+    sql_playerCurrentStatus = str(f"SELECT combat_level, quests_completed, quests_started, quests_not_started FROM main_runescape_status WHERE player_name = '{insertedPlayerName}' AND datesync_date = '{currentDate}'")
 
-    #create dataframe
+    #create DataFrame
     df_playerCurrentStatus = pd.read_sql(sql=sql_playerCurrentStatus, con=engine)
 
+    #if DataFrame empty, return 0
     if df_playerCurrentStatus.empty:
-        df_playerCurrentStatus_checkContent = 0
+
+        return([0])
+    
+    #if DataFrame not empty, create new DataFrame and return 1 and final DataFrame
+    elif not df_playerCurrentStatus.empty:
+
+        combatLevel = df_playerCurrentStatus.iloc[0]['combat_level']
+        quests_completed = df_playerCurrentStatus.iloc[0]['quests_completed']
+        quests_started = df_playerCurrentStatus.iloc[0]['quests_started']
+        quests_not_started = df_playerCurrentStatus.iloc[0]['quests_not_started']
+
+        df_data = [['Combat level', combatLevel], ['Quests completed', quests_completed], ['Quests started', quests_started], ['Quests not started', quests_not_started]]
+
+        df_playerCurrentStatus_Final = pd.DataFrame(df_data, columns=['Combat/Quests', 'Level/Score'])
+
+        return(1, df_playerCurrentStatus_Final)
+
+    #if unexpected error, return 2
     else:
-        df_playerCurrentStatus_checkContent = 1
 
-    #if checkValue is 1, retrieve all status stats from database
-    if df_playerCurrentStatus_checkContent == 1:
-
-        combatLevel = str(df_playerCurrentStatus.iloc[0]['combat_level'])
-        questsCompleted = str(df_playerCurrentStatus.iloc[0]['quests_completed'])
-        questsStarted = str(df_playerCurrentStatus.iloc[0]['quests_started'])
-        questsNotStarted = str(df_playerCurrentStatus.iloc[0]['quests_not_started'])
-
-        #return values for when function is called from other program
-        #return ([df_playerCurrentStatus_checkContent, df_playerCurrentStatus_checkContent],
-                #[combatLevel, questsCompleted, questsStarted, questsNotStarted])
-    
-        return ([df_playerCurrentStatus_checkContent, combatLevel, questsCompleted, questsStarted, questsNotStarted])
-    
-    else: ##should probably have a closer look at this later since we're just sending the same value 4x (two tuples)
-        #return ([df_playerCurrentStatus_checkContent, df_playerCurrentStatus_checkContent],
-                #[df_playerCurrentStatus_checkContent, df_playerCurrentStatus_checkContent])
-
-        return ([df_playerCurrentStatus_checkContent])
+        return([2])
 
 #create function to retrieve player last achievements
 def playerLastAchievements(insertedPlayerName):
 
-    #sql query
-    sql_playerLastAchievements = str(f"SELECT * FROM main_runescape_activities_processed WHERE player_name = '{insertedPlayerName}'")
+    #sql query for DataFrame creation
+    sql_playerLastAchievements = str(f"""SELECT event_date AS "Event Date", event_text AS "Event Text" FROM main_runescape_activities_processed WHERE player_name = '{insertedPlayerName}' ORDER BY "event_datetime_numeric" DESC LIMIT 5""")
 
-    #create dataframe
+    #create DataFrame
     df_playerLastAchievements = pd.read_sql(sql=sql_playerLastAchievements, con=engine)
 
-    eventDateTime_0 = df_playerLastAchievements[['event_datetime_numeric', 'event_text']].sort_values('event_datetime_numeric', ascending=False).iloc[0]['event_datetime_numeric']
-    eventText_0 = df_playerLastAchievements[['event_datetime_numeric', 'event_text']].sort_values('event_datetime_numeric', ascending=False).iloc[0]['event_text']
+    #if DataFrame empty, return 0
+    if df_playerLastAchievements.empty:
 
-    eventDateTime_1 = df_playerLastAchievements[['event_datetime_numeric', 'event_text']].sort_values('event_datetime_numeric', ascending=False).iloc[1]['event_datetime_numeric']
-    eventText_1 = df_playerLastAchievements[['event_datetime_numeric', 'event_text']].sort_values('event_datetime_numeric', ascending=False).iloc[1]['event_text']
-
-    eventDateTime_2 = df_playerLastAchievements[['event_datetime_numeric', 'event_text']].sort_values('event_datetime_numeric', ascending=False).iloc[2]['event_datetime_numeric']
-    eventText_2 = df_playerLastAchievements[['event_datetime_numeric', 'event_text']].sort_values('event_datetime_numeric', ascending=False).iloc[2]['event_text']
-
-    eventDateTime_3 = df_playerLastAchievements[['event_datetime_numeric', 'event_text']].sort_values('event_datetime_numeric', ascending=False).iloc[3]['event_datetime_numeric']
-    eventText_3 = df_playerLastAchievements[['event_datetime_numeric', 'event_text']].sort_values('event_datetime_numeric', ascending=False).iloc[3]['event_text']
+        return([0])
     
-    eventDateTime_4 = df_playerLastAchievements[['event_datetime_numeric', 'event_text']].sort_values('event_datetime_numeric', ascending=False).iloc[4]['event_datetime_numeric']
-    eventText_4 = df_playerLastAchievements[['event_datetime_numeric', 'event_text']].sort_values('event_datetime_numeric', ascending=False).iloc[4]['event_text']
+    #if DataFrame not empty, return 1 and DataFrame
+    elif not df_playerLastAchievements.empty:
 
-    #return values for when function is called from other program
-    return (eventDateTime_0, eventText_0, 
-            eventDateTime_1, eventText_1, 
-            eventDateTime_2, eventText_2, 
-            eventDateTime_3, eventText_3, 
-            eventDateTime_4, eventText_4)
+        return(1, df_playerLastAchievements)
+    
+    #if unexpected error, return 2
+    else:
+
+        return([2])
