@@ -15,24 +15,22 @@ db_user = os.getenv("db_user")
 db_method_db = os.getenv("db_method_db")
 db_method_conn = os.getenv("db_method_conn")
 
-#create currentDate datestamp, to allow filtering dataframes with today's date
-currentDateNum = datetime.date.today()
-currentDate = str(currentDateNum)
-
 #create engine to retrieve data from DB
 engine = create_engine(f"{db_method_db}+{db_method_conn}://{db_user}:{db_password}@{db_hostname}:{db_port_id}/{db_database}")
     
 #create function to compare player combat stats and quest progression
-def compareCurrentPlayerStatus(insertedPlayerNameP1, insertedPlayerNameP2):
+def compareCurrentPlayerStatus(insertedPlayerNameP1, insertedPlayerNameP2, insertedDate):
+
+    compareCurrentPlayerStatus_date = str(insertedDate)
 
     #p1 sql query
-    sql_compareCurrentPlayerStatus_p1 = str(f"SELECT combat_level, quests_completed, quests_started, quests_not_started FROM main_runescape_status WHERE player_name = '{insertedPlayerNameP1}' AND datesync_date = '{currentDate}'")
+    sql_compareCurrentPlayerStatus_p1 = str(f"SELECT combat_level, quests_completed, quests_started, quests_not_started FROM main_runescape_status WHERE player_name = '{insertedPlayerNameP1}' AND datesync_date = '{compareCurrentPlayerStatus_date}'")
 
     #create DataFrame P1
     df_compareCurrentStatus_p1 = pd.read_sql(sql=sql_compareCurrentPlayerStatus_p1, con=engine)
     
     #p2 sql query
-    sql_compareCurrentPlayerStatus_p2 = str(f"SELECT combat_level, quests_completed, quests_started, quests_not_started FROM main_runescape_status WHERE player_name = '{insertedPlayerNameP2}' AND datesync_date = '{currentDate}'")
+    sql_compareCurrentPlayerStatus_p2 = str(f"SELECT combat_level, quests_completed, quests_started, quests_not_started FROM main_runescape_status WHERE player_name = '{insertedPlayerNameP2}' AND datesync_date = '{compareCurrentPlayerStatus_date}'")
 
     #create DataFrame P2
     df_compareCurrentStatus_p2 = pd.read_sql(sql=sql_compareCurrentPlayerStatus_p2, con=engine)
@@ -83,16 +81,18 @@ def compareCurrentPlayerStatus(insertedPlayerNameP1, insertedPlayerNameP2):
         return([2])
 
 #create function to compare player levels
-def compareCurrentPlayerSkills(insertedPlayerNameP1, insertedPlayerNameP2):
+def compareCurrentPlayerSkills(insertedPlayerNameP1, insertedPlayerNameP2, insertedDate):
+
+    compareCurrentPlayerSkills_date = str(insertedDate)
 
     #p1 sql query
-    sql_compareCurrentPlayerSkills_p1 = str(f"""SELECT skill AS "Skill", level, experience FROM main_runescape_hiscores WHERE player_name = '{insertedPlayerNameP1}' AND datesync_date = '{currentDate}'""")
+    sql_compareCurrentPlayerSkills_p1 = str(f"""SELECT skill AS "Skill", level, experience FROM main_runescape_hiscores WHERE player_name = '{insertedPlayerNameP1}' AND datesync_date = '{compareCurrentPlayerSkills_date}'""")
 
     #p1 create DataFrame
     df_CompareCurrentPlayerSkills_p1 = pd.read_sql(sql=sql_compareCurrentPlayerSkills_p1, con=engine)
 
     #p2 sql query
-    sql_compareCurrentPlayerSkills_p2 = str(f"""SELECT skill AS "Skill", level, experience FROM main_runescape_hiscores WHERE player_name = '{insertedPlayerNameP2}' AND datesync_date = '{currentDate}'""")
+    sql_compareCurrentPlayerSkills_p2 = str(f"""SELECT skill AS "Skill", level, experience FROM main_runescape_hiscores WHERE player_name = '{insertedPlayerNameP2}' AND datesync_date = '{compareCurrentPlayerSkills_date}'""")
 
     #p2 create DataFrame
     df_CompareCurrentPlayerSkills_p2 = pd.read_sql(sql=sql_compareCurrentPlayerSkills_p2, con=engine)
@@ -129,16 +129,18 @@ def compareCurrentPlayerSkills(insertedPlayerNameP1, insertedPlayerNameP2):
         return([2])
 
 #create function to compare player activites
-def compareCurrentPlayerActivities(insertedPlayerNameP1, insertedPlayerNameP2):
+def compareCurrentPlayerActivities(insertedPlayerNameP1, insertedPlayerNameP2, insertedDate):
+
+    compareCurrentPlayerActivities_date = str(insertedDate)
 
     #p1 sql query
-    sql_compareCurrentPlayerActivities_p1 = str(f"""SELECT activity AS "Activity", score FROM main_runescape_achievements WHERE player_name = '{insertedPlayerNameP1}' AND datesync_date = '{currentDate}'""")
+    sql_compareCurrentPlayerActivities_p1 = str(f"""SELECT activity AS "Activity", score FROM main_runescape_achievements WHERE player_name = '{insertedPlayerNameP1}' AND datesync_date = '{compareCurrentPlayerActivities_date}'""")
 
     #p1 DataFrame
     df_compareCurrentPlayerActivities_p1 = pd.read_sql(sql=sql_compareCurrentPlayerActivities_p1, con=engine)
 
     #p2 sql query
-    sql_compareCurrentPlayerActivities_p2 = str(f"""SELECT activity AS "Activity", score FROM main_runescape_achievements WHERE player_name = '{insertedPlayerNameP2}' AND datesync_date = '{currentDate}'""")
+    sql_compareCurrentPlayerActivities_p2 = str(f"""SELECT activity AS "Activity", score FROM main_runescape_achievements WHERE player_name = '{insertedPlayerNameP2}' AND datesync_date = '{compareCurrentPlayerActivities_date}'""")
 
     #p2 dDataFrame
     df_compareCurrentPlayerActivities_p2 = pd.read_sql(sql=sql_compareCurrentPlayerActivities_p2, con=engine)
@@ -169,19 +171,21 @@ def compareCurrentPlayerActivities(insertedPlayerNameP1, insertedPlayerNameP2):
         return([2])
 
 #create function to compare player achievements
-def compareLast30daysPlayerAchievements(insertedPlayerNameP1, insertedPlayerNameP2):
+def compareLast30daysPlayerAchievements(insertedPlayerNameP1, insertedPlayerNameP2, insertedDate):
+
+    compareLast30daysPlayerAchievements_date = str(insertedDate)
     
     #create current date minus 30 days datestamp
-    datePrior = str(currentDateNum - timedelta(days=30))
+    datePrior = str(insertedDate - timedelta(days=30))
 
     #p1 sql query
-    sql_compareLast30daysPlayerAchievements_p1 = str(f"SELECT * FROM main_runescape_activities_processed WHERE player_name = '{insertedPlayerNameP1}' AND event_date_numeric >= '{datePrior}' AND event_date_numeric <= '{currentDate}'")
+    sql_compareLast30daysPlayerAchievements_p1 = str(f"SELECT * FROM main_runescape_activities_processed WHERE player_name = '{insertedPlayerNameP1}' AND event_date_numeric >= '{datePrior}' AND event_date_numeric <= '{compareLast30daysPlayerAchievements_date}'")
 
     #p1 dataframe
     df_compareLast30daysPlayerAchievements_p1 = pd.read_sql(sql=sql_compareLast30daysPlayerAchievements_p1, con=engine)
 
     #p2 sql query
-    sql_compareLast30daysPlayerAchievements_p2 = str(f"SELECT * FROM main_runescape_activities_processed WHERE player_name = '{insertedPlayerNameP2}' AND event_date_numeric >= '{datePrior}' AND event_date_numeric <= '{currentDate}'")
+    sql_compareLast30daysPlayerAchievements_p2 = str(f"SELECT * FROM main_runescape_activities_processed WHERE player_name = '{insertedPlayerNameP2}' AND event_date_numeric >= '{datePrior}' AND event_date_numeric <= '{compareLast30daysPlayerAchievements_date}'")
 
     #p2 dataframe
     df_compareLast30daysPlayerAchievements_p2 = pd.read_sql(sql=sql_compareLast30daysPlayerAchievements_p2, con=engine)

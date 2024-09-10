@@ -17,14 +17,13 @@ db_method_conn = os.getenv("db_method_conn")
 #create engine to retrieve data from DB
 engine = create_engine(f"{db_method_db}+{db_method_conn}://{db_user}:{db_password}@{db_hostname}:{db_port_id}/{db_database}")
 
-#create currentDate datestamp for later filtering of dataframes
-currentDate = str(datetime.date.today())
-
 #create function to retrieve player current hiscore stats
-def playerCurrentHiscores(insertedPlayerName):
+def playerCurrentHiscores(insertedPlayerName, insertedDate):
+
+    playerCurrentHiscores_date = str(insertedDate)
 
     #sql for DataFrame creation
-    sql_playerCurrentHiscores = str(f"""SELECT skill AS "Skill", level AS "Level", experience AS "Experience" FROM main_runescape_hiscores WHERE player_name = '{insertedPlayerName}' AND datesync_date = '{currentDate}'""")
+    sql_playerCurrentHiscores = str(f"""SELECT skill AS "Skill", level AS "Level", experience AS "Experience" FROM main_runescape_hiscores WHERE player_name = '{insertedPlayerName}' AND datesync_date = '{playerCurrentHiscores_date}'""")
 
     #create DataFrame
     df_playerCurrentHiscores = pd.read_sql(sql=sql_playerCurrentHiscores, con=engine)
@@ -45,10 +44,12 @@ def playerCurrentHiscores(insertedPlayerName):
         return([2])
 
 #create function to retrieve player current activities stats
-def playerCurrentActivities(insertedPlayerName):
+def playerCurrentActivities(insertedPlayerName, insertedDate):
+
+    playerCurrentActivities_date = str(insertedDate)
 
     #sql for DataFrame creation
-    sql_playerCurrentActivities = str(f"""SELECT activity AS "Activity", rank AS "Rank", score AS "Score" FROM main_runescape_achievements WHERE player_name = '{insertedPlayerName}' AND datesync_date = '{currentDate}'""")
+    sql_playerCurrentActivities = str(f"""SELECT activity AS "Activity", rank AS "Rank", score AS "Score" FROM main_runescape_achievements WHERE player_name = '{insertedPlayerName}' AND datesync_date = '{playerCurrentActivities_date}'""")
 
     #create DataFrame
     df_playerCurrentActivities = pd.read_sql(sql=sql_playerCurrentActivities, con=engine)
@@ -69,10 +70,12 @@ def playerCurrentActivities(insertedPlayerName):
         return([2])
 
 #create function to retrieve player current combat stats and quest progression
-def playerCurrentStatus(insertedPlayerName):
+def playerCurrentStatus(insertedPlayerName, insertedDate):
+
+    playerCurrentStatus_date = str(insertedDate)
     
     #sql query for DataFrame creation
-    sql_playerCurrentStatus = str(f"SELECT combat_level, quests_completed, quests_started, quests_not_started FROM main_runescape_status WHERE player_name = '{insertedPlayerName}' AND datesync_date = '{currentDate}'")
+    sql_playerCurrentStatus = str(f"SELECT combat_level, quests_completed, quests_started, quests_not_started FROM main_runescape_status WHERE player_name = '{insertedPlayerName}' AND datesync_date = '{playerCurrentStatus_date}'")
 
     #create DataFrame
     df_playerCurrentStatus = pd.read_sql(sql=sql_playerCurrentStatus, con=engine)
@@ -102,7 +105,9 @@ def playerCurrentStatus(insertedPlayerName):
         return([2])
 
 #create function to retrieve player last achievements
-def playerLastAchievements(insertedPlayerName):
+def playerLastAchievements(insertedPlayerName, insertedDate):
+
+    playerLastAchievements_date = str(insertedDate)
 
     #sql query for DataFrame creation
     sql_playerLastAchievements = str(f"""SELECT event_date AS "Event Date", event_text AS "Event Text" FROM main_runescape_activities_processed WHERE player_name = '{insertedPlayerName}' ORDER BY "event_datetime_numeric" DESC LIMIT 5""")
