@@ -570,6 +570,9 @@ def run_discord_bot():
         #input validation to check if any characters in input are forbidden
         userCheckInputString = commandInputChecker.checkInputString(playerName)
 
+        #datestamp for invoking Lookup_PlayerCurrentStatus
+        lookupInvokeDate = datetime.date.today()
+
         if userCheckInputString[0] == 1:
 
             checkPlayerName = userCheckInputString[1]
@@ -581,22 +584,22 @@ def run_discord_bot():
             if databaseCheck[0] == 1 and databaseCheck[1] == 1 and databaseCheck[2] == 1 and databaseCheck[3] == 1:
                 
                 #creating table with current combat and quest stats using returnStatus
-                returnStatus = Lookup_PlayerCurrentStatus.playerCurrentStatus(checkPlayerName)
+                returnStatus = Lookup_PlayerCurrentStatus.playerCurrentStatus(checkPlayerName, lookupInvokeDate)
                 status_string = returnStatus[1].to_string()
                 status_final_table = (f"```\n{status_string}\n```")
 
                 #creating table with current hiscores using returnHiscores
-                returnHiscores = Lookup_PlayerCurrentStatus.playerCurrentHiscores(checkPlayerName)
+                returnHiscores = Lookup_PlayerCurrentStatus.playerCurrentHiscores(checkPlayerName, lookupInvokeDate)
                 hiscore_string = returnHiscores[1].to_string()
                 hiscore_final_table = (f"```\n{hiscore_string}\n```")
 
                 #creating table with current activities using returnActivities
-                returnActivities = Lookup_PlayerCurrentStatus.playerCurrentActivities(checkPlayerName)
+                returnActivities = Lookup_PlayerCurrentStatus.playerCurrentActivities(checkPlayerName, lookupInvokeDate)
                 activites_string = returnActivities[1].to_string()
                 activities_final_table = (f"```\n{activites_string}\n```")
 
                 #creating table with last achievements/event logs using returnAchievements
-                returnAchievements = Lookup_PlayerCurrentStatus.playerLastAchievements(checkPlayerName)
+                returnAchievements = Lookup_PlayerCurrentStatus.playerLastAchievements(checkPlayerName, lookupInvokeDate)
                 achievements_string = returnAchievements[1].to_string()
                 achievements_final_table = (f"```\n{achievements_string}\n```")
 
@@ -647,23 +650,26 @@ def run_discord_bot():
             #checks if Status dataframe contains data. If it does contain data, return pCurrentCompare
             if databaseCheckCount_p1 == 4 and databaseCheckCount_p2 == 4:
 
+                #date for invoking Lookup_PlayerCurrentCompare
+                lookupInvokeDate = datetime.date.today()
+
                 #creating table to compare both player's combat level and quest progression using returnStatus
-                returnStatus = Lookup_PlayerCurrentCompare.compareCurrentPlayerStatus(checkPlayerName_p1, checkPlayerName_p2)
+                returnStatus = Lookup_PlayerCurrentCompare.compareCurrentPlayerStatus(checkPlayerName_p1, checkPlayerName_p2, lookupInvokeDate)
                 status_string = returnStatus[1].to_string()
                 status_final_table = (f"```\n{status_string}\n```")
 
                 #creating table to compare both player's skills using returnHiscores
-                returnHiscores = Lookup_PlayerCurrentCompare.compareCurrentPlayerSkills(checkPlayerName_p1, checkPlayerName_p2)
+                returnHiscores = Lookup_PlayerCurrentCompare.compareCurrentPlayerSkills(checkPlayerName_p1, checkPlayerName_p2, lookupInvokeDate)
                 hiscores_string = returnHiscores[1].to_string()
                 hiscores_final_table = (f"```\n{hiscores_string}\n```")
 
                 #creating table to compare both player's activities using returnActivities
-                returnActivities = Lookup_PlayerCurrentCompare.compareCurrentPlayerActivities(checkPlayerName_p1, checkPlayerName_p2)
+                returnActivities = Lookup_PlayerCurrentCompare.compareCurrentPlayerActivities(checkPlayerName_p1, checkPlayerName_p2, lookupInvokeDate)
                 activities_string = returnActivities[1].to_string()
                 activities_final_table = (f"```\n{activities_string}\n```")
                 
                 #creating table to compare number of achievements/event logs recorded in last 30 days using returnAchievements
-                returnAchievements = Lookup_PlayerCurrentCompare.compareLast30daysPlayerAchievements(checkPlayerName_p1, checkPlayerName_p2)
+                returnAchievements = Lookup_PlayerCurrentCompare.compareLast30daysPlayerAchievements(checkPlayerName_p1, checkPlayerName_p2, lookupInvokeDate)
                 achievements_string = returnAchievements[1].to_string()
                 achievements_final_table = (f"```\n{achievements_string}\n```")
 
@@ -686,7 +692,7 @@ def run_discord_bot():
                 await ctx.send(f"Error: Data for both players ('{checkPlayerName_p1}' and '{checkPlayerName_p2}') is missing from database. Return Status for {checkPlayerName_p1}: {databaseCheck_p1}. Return Status for {checkPlayerName_p2}: {databaseCheck_p2}.")
 
         else:
-            await ctx.send("Error: Violation of input criteria. Only characters A-Z, a-z, and 0-9 are allowed.")
+            await ctx.send("Error: Violation of input criteria. Only characters Aa-Zz and 0-9 are allowed.")
 
     @bot.command()
     async def dxpChallenge (ctx, firstInsertedDate, secondInsertedDate):
