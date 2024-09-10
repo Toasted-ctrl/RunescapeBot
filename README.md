@@ -34,6 +34,8 @@ This bot requires PostgreSQL to be set up on the host machine. Run createDatabas
 -  PLEASE ALSO MAKE SURE, IF ATTEMPTING TO RUN FROM A LINUX MACHINE, TO USE DOS2UNIX. FILE WILL OTHERWISE NOT EXECUTE AFTER USING CHMOD.
 
 RECENTLY ADDED\
+[2024-09-10] Fixed Bot_primary, Lookup_PlayerCurrentStatus and Lookup_PlayerCurrentCompare to make use of lookupInvokeDate and insertedDate, fixing cashing issue.
+
 [2024-08-31] Implemented checkTracked command. Allows users with general admin rights to retrieve a list of currently tracked usernames.
 
 [2024-08-28] Bugfix (KI001). Fixed issue where RuneScape usernames with spaces could not be accepted. Now if a name needs to be added/removed/searched for you can substitute a space with a '+'. The '+' is removed on the backend. This will ensure that two names can still be provided when two names are required for a command.
